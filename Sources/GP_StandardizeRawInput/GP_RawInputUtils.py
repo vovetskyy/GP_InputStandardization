@@ -35,7 +35,7 @@ def get_filename_parts(filename):
     filename_parts_re = filename_regex.search(pure_filename)
 
     if filename_parts_re is None:
-        logging.error(pure_filename + 'is not in the expected format for parsing')
+        logging.error(pure_filename + 'is not in the expected format for name parsing')
     else:
         pc_name_str = filename_parts_re.group(1)
         date_str = filename_parts_re.group(5)
