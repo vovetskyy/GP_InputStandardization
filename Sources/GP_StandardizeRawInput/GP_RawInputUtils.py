@@ -6,7 +6,7 @@ import logging
 FilenameParts = namedtuple('FilenameParts', ['PC_name', 'Date', 'Time', 'ScriptId', 'FileExt'])
 
 
-def get_filename_parts(filename):
+def get_filename_parts(full_filename):
     """
     Function to parse filenames of the PG raw input files.
     Expected format of the name:
@@ -16,7 +16,7 @@ def get_filename_parts(filename):
 
     Returns the corresponding FilenameParts tuple
     """
-    logging.debug('Start parsing of file ' + '"' + filename + '"')
+    logging.debug('Start parsing of file ' + '"' + full_filename + '"')
 
     pc_name_str = ''
     date_str = ''
@@ -24,7 +24,7 @@ def get_filename_parts(filename):
     script_id_str = ''
     file_ext_str = ''
 
-    filename_p = Path(filename)
+    filename_p = Path(full_filename)
     file_ext_str = filename_p.suffix
 
     pure_filename = filename_p.stem
@@ -48,6 +48,6 @@ def get_filename_parts(filename):
 
     filename_parts = FilenameParts(PC_name=pc_name_str, Date=date_str, Time=time_str, ScriptId=script_id_str,
                                    FileExt=file_ext_str)
-    logging.debug('"' + filename + '": final parsing result:\n' + str(filename_parts))
+    logging.debug('"' + full_filename + '": final parsing result:\n' + str(filename_parts))
 
     return filename_parts
