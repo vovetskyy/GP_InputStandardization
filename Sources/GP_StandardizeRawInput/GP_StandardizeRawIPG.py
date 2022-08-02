@@ -1,11 +1,13 @@
 import logging
 from pathlib import Path
+import io
+import pandas as pd
 from pprint import pprint as pp
 
 import GP_RawInputUtils as raw_utils
 
 
-def get_delimiter_pos(lines):
+def get_delimiter_pos_in_IPG(lines):
     """
     finds delimiter (1st empty line) between real time measurements section
     and cumulative measurements section in raw IPG file
@@ -22,6 +24,26 @@ def get_delimiter_pos(lines):
             break
 
     return pos
+
+
+def transform_IPG_real_meas_to_df(meas_lines):
+    """
+    transforms list of csv-lines, read from IPG for real measurements, to pandas Dataframe
+
+    :param meas_lines: array of strings in csv-format
+    :return: converted pandas Dataframe
+    """
+    # covert IPG csv to Dataframe
+    # see https://stackoverflow.com/questions/42171709/creating-pandas-dataframe-from-a-list-of-strings
+    meas_df = pd.read_csv(io.StringIO('\n'.join(meas_lines)), delim_whitespace=False)
+
+    # set type of 'System Time' column to datetime manually, as it could not be recognized automatically
+    meas_df['System Time'] = pd.to_datetime(meas_df['System Time'], format="%H:%M:%S:%f")
+
+    # print(meas_df)
+    # print(meas_df.dtypes)
+
+    return meas_df
 
 
 def standardize_raw_IPG(full_filename):
@@ -45,9 +67,11 @@ def standardize_raw_IPG(full_filename):
     IPG_content = IPG_file.readlines()
     IPG_file.close()
 
-    delim_pos = get_delimiter_pos(IPG_content)
-    if(delim_pos == -1):
+    delim_pos = get_delimiter_pos_in_IPG(IPG_content)
+    if (delim_pos == -1):
         logging.error('"' + filename + '": wrong format: no sections delimiter found')
     else:
         real_meas_lines = IPG_content[:delim_pos]
-        cum_meas_lines = IPG_content[delim_pos+1:]
+        cum_meas_lines = IPG_content[delim_pos + 1:]
+
+        real_meas_df = transform_IPG_real_meas_to_df(real_meas_lines)
