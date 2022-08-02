@@ -40,7 +40,7 @@ def transform_IPG_real_meas_to_df(meas_lines):
     # set type of 'System Time' column to datetime manually, as it could not be recognized automatically
     meas_df['System Time'] = pd.to_datetime(meas_df['System Time'], format="%H:%M:%S:%f")
 
-    # print(meas_df)
+    print(meas_df)
     # print(meas_df.dtypes)
 
     return meas_df
