@@ -1,9 +1,10 @@
 from collections import namedtuple
 from pathlib import Path
 import re
+import datetime as dt
 import logging
 
-FilenameParts = namedtuple('FilenameParts', ['PC_name', 'Date', 'Time', 'ScriptId', 'FileExt'])
+RawInputFilenameParts = namedtuple('FilenameParts', ['PC_name', 'Date', 'Time', 'ScriptId', 'FileExt'])
 
 
 def get_filename_parts(full_filename):
@@ -22,7 +23,6 @@ def get_filename_parts(full_filename):
     date_str = ''
     time_str = ''
     script_id_str = ''
-    file_ext_str = ''
 
     filename_p = Path(full_filename)
     file_ext_str = filename_p.suffix
@@ -46,8 +46,59 @@ def get_filename_parts(full_filename):
         for i in range(len(filename_parts_re.groups())):
             logging.debug(str(i) + ': "' + filename_parts_re.group(i) + '"')
 
-    filename_parts = FilenameParts(PC_name=pc_name_str, Date=date_str, Time=time_str, ScriptId=script_id_str,
-                                   FileExt=file_ext_str)
+    filename_parts = RawInputFilenameParts(PC_name=pc_name_str, Date=date_str, Time=time_str, ScriptId=script_id_str,
+                                           FileExt=file_ext_str)
     logging.debug('"' + full_filename + '": final parsing result:\n' + str(filename_parts))
 
     return filename_parts
+
+
+def get_aligned_datetime_df(orig_df, filename_parts):
+    """
+    calculates correct dates for passed datafraeme, depends on passed filename parts
+
+    :param orig_df: Dataframe with inaligned dates
+    :param filename_parts: parsed RawInputFilenameParts tuple
+    :return: aligned Dataframe
+    """
+    logging.debug('start datetime alignment')
+
+    # times_df[0] = times_df[0].replace(2000)
+    aligned_df = orig_df
+
+    # get datetime info stored in the filename
+    start_date = dt.date.fromisoformat(filename_parts.Date)
+    start_time = dt.datetime.strptime(filename_parts.Time, "%H-%M-%S").time()
+    logging.debug('Recognized start date from filename: ' + str(start_date))
+    logging.debug('Recognized start time from filename: ' + str(start_time))
+
+    # calculate date of the first measurement:
+    #   - the same day as in start_date if start_time stored in filenam is smaller than the first time in the table
+    #   - start_date + 1 day otherwise, as measurement seem to be started already on the next day
+    first_meas_time = aligned_df[0].time()
+
+    logging.debug('Recognized start time from the table: ' + str(first_meas_time))
+
+    if(first_meas_time < start_time):
+        start_date = start_date + dt.timedelta(days=1)
+        logging.debug('As start time from the table is smaller than in the filaname, startdate was increased tó: '
+                      + str(start_date))
+
+    # set alignd date to the 1st element
+    aligned_df[0] = aligned_df[0].replace(start_date.year, start_date.month, start_date.day)
+
+    # set aligned dates for all other element, considering possible day wraparound
+    cur_date = start_date
+    for i in range(1, len(aligned_df)):
+        cur_time = aligned_df[i].time()
+        prev_time = aligned_df[i-1].time()
+
+        if (cur_time.second < prev_time.second):
+            cur_date = cur_date + dt.timedelta(days=1)
+            logging.debug(f'As df[{i}].time {cur_time} is smaller than df[{i-1}].time {prev_time}, cur date was '
+                          f'increased to: {cur_date}')
+
+        aligned_df[i] = aligned_df[i].replace(cur_date.year, cur_date.month, cur_date.day)
+
+
+    return aligned_df
