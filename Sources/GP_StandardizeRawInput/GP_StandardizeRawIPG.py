@@ -6,6 +6,8 @@ from pprint import pprint as pp
 
 import GP_RawInputUtils as raw_utils
 
+IPG_TIME_COLUMN_NAME = "System Time"
+
 
 def get_delimiter_pos_in_IPG(lines):
     """
@@ -26,11 +28,13 @@ def get_delimiter_pos_in_IPG(lines):
     return pos
 
 
-def transform_IPG_real_meas_to_df(meas_lines):
+def transform_IPG_real_meas_to_df(meas_lines, filename_parts):
     """
     transforms list of csv-lines, read from IPG for real measurements, to pandas Dataframe
 
     :param meas_lines: array of strings in csv-format
+    :param filename_parts: parsed RawInputFilenameParts tuple
+
     :return: converted pandas Dataframe
     """
     # covert IPG csv to Dataframe
@@ -38,10 +42,20 @@ def transform_IPG_real_meas_to_df(meas_lines):
     meas_df = pd.read_csv(io.StringIO('\n'.join(meas_lines)), delim_whitespace=False)
 
     # set type of 'System Time' column to datetime manually, as it could not be recognized automatically
-    meas_df['System Time'] = pd.to_datetime(meas_df['System Time'], format="%H:%M:%S:%f")
+    # And then rename the resulting Datetime columnn accordingly
+    times_serie = pd.to_datetime(meas_df['System Time'], format="%H:%M:%S:%f")
+    datetimes_serie = raw_utils.get_aligned_datetime_serie(times_serie, filename_parts)
+    datetimes_serie.name = raw_utils.RAW_DATETIME_COLUMN_NAME
 
-    print(meas_df)
-    # print(meas_df.dtypes)
+    # get raw date column from calculated datetime and rename the column accordingly
+    dates_serie = datetimes_serie.dt.date
+    dates_serie.name = raw_utils.RAW_DATE_COLUMN_NAME
+
+    # set standard column name for reported system times
+    meas_df.rename(columns={IPG_TIME_COLUMN_NAME: raw_utils.RAW_TIME_COLUMN_NAME}, inplace=True)
+
+    #concat all data to one table and return the result
+    meas_df = pd.concat([datetimes_serie, dates_serie, meas_df], axis=1)
 
     return meas_df
 
@@ -74,4 +88,5 @@ def standardize_raw_IPG(full_filename):
         real_meas_lines = IPG_content[:delim_pos]
         cum_meas_lines = IPG_content[delim_pos + 1:]
 
-        real_meas_df = transform_IPG_real_meas_to_df(real_meas_lines)
+        real_meas_df = transform_IPG_real_meas_to_df(real_meas_lines, filename_parts)
+

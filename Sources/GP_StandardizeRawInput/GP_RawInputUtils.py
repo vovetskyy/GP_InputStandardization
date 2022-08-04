@@ -4,6 +4,10 @@ import re
 import datetime as dt
 import logging
 
+RAW_DATETIME_COLUMN_NAME = 'Raw DateTime'
+RAW_DATE_COLUMN_NAME = 'Raw Date'
+RAW_TIME_COLUMN_NAME = 'Raw Time'
+
 RawInputFilenameParts = namedtuple('FilenameParts', ['PC_name', 'Date', 'Time', 'ScriptId', 'FileExt'])
 
 
@@ -53,13 +57,13 @@ def get_filename_parts(full_filename):
     return filename_parts
 
 
-def get_aligned_datetime_df(orig_df, filename_parts):
+def get_aligned_datetime_serie(orig_df, filename_parts):
     """
     calculates correct dates for passed datafraeme, depends on passed filename parts
 
     :param orig_df: Dataframe with inaligned dates
     :param filename_parts: parsed RawInputFilenameParts tuple
-    :return: aligned Dataframe
+    :return: aligned Serie
     """
     logging.debug('start datetime alignment')
 
