@@ -93,7 +93,6 @@ def get_aligned_datetime_df(orig_df, filename_parts):
         cur_time = aligned_df[i].time()
         prev_time = aligned_df[i - 1].time()
 
-        # if (cur_time.second < prev_time.second):
         if (cur_time < prev_time):
             cur_date = cur_date + dt.timedelta(days=1)
             logging.debug(f'As df[{i}].time {cur_time} is smaller than df[{i - 1}].time {prev_time}, cur date was '
