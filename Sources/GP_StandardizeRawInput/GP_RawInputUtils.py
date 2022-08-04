@@ -79,7 +79,7 @@ def get_aligned_datetime_df(orig_df, filename_parts):
 
     logging.debug('Recognized start time from the table: ' + str(first_meas_time))
 
-    if(first_meas_time < start_time):
+    if (first_meas_time < start_time):
         start_date = start_date + dt.timedelta(days=1)
         logging.debug('As start time from the table is smaller than in the filaname, startdate was increased tó: '
                       + str(start_date))
@@ -91,14 +91,14 @@ def get_aligned_datetime_df(orig_df, filename_parts):
     cur_date = start_date
     for i in range(1, len(aligned_df)):
         cur_time = aligned_df[i].time()
-        prev_time = aligned_df[i-1].time()
+        prev_time = aligned_df[i - 1].time()
 
-        if (cur_time.second < prev_time.second):
+        # if (cur_time.second < prev_time.second):
+        if (cur_time < prev_time):
             cur_date = cur_date + dt.timedelta(days=1)
-            logging.debug(f'As df[{i}].time {cur_time} is smaller than df[{i-1}].time {prev_time}, cur date was '
+            logging.debug(f'As df[{i}].time {cur_time} is smaller than df[{i - 1}].time {prev_time}, cur date was '
                           f'increased to: {cur_date}')
 
         aligned_df[i] = aligned_df[i].replace(cur_date.year, cur_date.month, cur_date.day)
-
 
     return aligned_df
