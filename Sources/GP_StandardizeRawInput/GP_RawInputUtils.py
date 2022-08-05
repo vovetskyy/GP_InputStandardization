@@ -55,7 +55,8 @@ def get_filename_parts(full_filename):
     logging.debug('Start analysis of filename ' + '"' + pure_filename + '"')
 
     # filename_regex = re.compile(r'(^(\w*))_(((\d\d\d\d)-(\d\d)-(\d\d))_((\d\d)-(\d\d)-(\d\d)(.*))_(IPG|Script2)$)')
-    filename_regex = re.compile(r'(^(\w*)(.*))__(((\d\d\d\d)-(\d\d)-(\d\d))_(.*))__((IPG|Script2)$)')
+    regex_str = r'(^(\w*)(.*))__(((\d\d\d\d)-(\d\d)-(\d\d))_(.*))__' + '((' + RAW_IPG_FILENAME_SUFFIX + ')$)'
+    filename_regex = re.compile(regex_str)
     filename_parts_re = filename_regex.search(pure_filename)
 
     if filename_parts_re is None:
