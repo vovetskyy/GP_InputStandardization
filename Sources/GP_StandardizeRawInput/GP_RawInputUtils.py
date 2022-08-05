@@ -4,21 +4,31 @@ import re
 import datetime as dt
 import logging
 
-# ---------------------------------------
-# ------------- CONSTANTS ---------------
-RAW_FILENAME_DELIM = '__'
+# =======================================
+# ============= CONSTANTS ===============
 
+# ---------------------------------------
+# --------- Filenames constants ---------
+RAW_FILENAME_DELIM = '__'
+RAW_IPG_FILENAME_SUFFIX = 'IPG'
+
+RAW_REALMEAS_FILENAME_SUFFIX = 'RM'
+RAW_IPG_REALMEAS_FILENAME_SUFFIX = RAW_IPG_FILENAME_SUFFIX + RAW_FILENAME_DELIM + RAW_REALMEAS_FILENAME_SUFFIX
+# ---------------------------------------
+
+# ---------------------------------------
+# --------- Filenames constants ---------
 RAW_DATETIME_COLUMN_NAME = 'Raw DateTime'
 RAW_DATE_COLUMN_NAME = 'Raw Date'
 RAW_TIME_COLUMN_NAME = 'Raw Time'
-
-RAW_IPG_REALMEAS_FILENAME_SUFFIX = 'IPG' + RAW_FILENAME_DELIM + 'RM'
 # ---------------------------------------
 
-# ---------------------------------------
-# ------------- STD TYPES ---------------
+# =======================================
+
+# =======================================
+# ============= STD TYPES ===============
 RawInputFilenameParts = namedtuple('FilenameParts', ['PC_name', 'Date', 'Time', 'ScriptId', 'FileExt'])
-# ---------------------------------------
+# =======================================
 
 
 def get_filename_parts(full_filename):
