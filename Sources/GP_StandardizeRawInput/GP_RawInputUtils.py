@@ -17,10 +17,11 @@ RAW_IPG_REALMEAS_FILENAME_SUFFIX = RAW_IPG_FILENAME_SUFFIX + RAW_FILENAME_DELIM 
 # ---------------------------------------
 
 # ---------------------------------------
-# --------- Filenames constants ---------
-RAW_DATETIME_COLUMN_NAME = 'Raw DateTime'
-RAW_DATE_COLUMN_NAME = 'Raw Date'
-RAW_TIME_COLUMN_NAME = 'Raw Time'
+# --------- Table column names ---------
+RAW_DATETIME_COLUMN_NAME = 'Raw_DateTime'
+RAW_DATE_COLUMN_NAME = 'Raw_Date'
+RAW_TIME_COLUMN_NAME = 'Raw_Time'
+RAW_PC_COLUMN_NAME = 'PC_Name '
 # ---------------------------------------
 
 # =======================================
@@ -28,6 +29,8 @@ RAW_TIME_COLUMN_NAME = 'Raw Time'
 # =======================================
 # ============= STD TYPES ===============
 RawInputFilenameParts = namedtuple('FilenameParts', ['PC_name', 'Date', 'Time', 'ScriptId', 'FileExt'])
+
+
 # =======================================
 
 
@@ -124,5 +127,3 @@ def get_aligned_datetime_serie(orig_df, filename_parts):
                           f'increased to: {cur_date}')
 
         aligned_df[i] = aligned_df[i].replace(cur_date.year, cur_date.month, cur_date.day)
-
-    return aligned_df
