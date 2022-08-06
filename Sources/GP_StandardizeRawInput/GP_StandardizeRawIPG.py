@@ -68,23 +68,19 @@ def transform_IPG_real_meas_to_df(meas_lines, filename_parts):
     return meas_df
 
 
-def get_std_IPG_real_meas_name(IPG_df, filename_parts):
+def get_std_IPG_real_meas_name(meas_timestamps, filename_parts):
     """
      Construct standardized raw real-meas IPG filename
-    :param IPG_df: IPG dataframe
-    :param filename_parts: RawInputFilenameParts tuple to create filename
+    :param meas_timestamps: MeasTimestamps tuple with timestamps
+    :param filename_parts: RawInputFilenameParts tuple with parsed original filename
     :return: constructed filename
     """
     # get start/end measurement dates to be used in resulting filenames
 
-    start_date = IPG_df.at[0, rawu.RAW_DATE_COLUMN_NAME]
-    start_time = IPG_df.at[0, rawu.RAW_TIME_COLUMN_NAME]
-    end_date = IPG_df.iloc[-1].at[rawu.RAW_DATE_COLUMN_NAME]
-    end_time = IPG_df.iloc[-1].at[rawu.RAW_TIME_COLUMN_NAME]
-    start_date_str = str(start_date)
-    end_date_str = str(end_date)
-    start_time_str = rawu.convert_df_time_to_str(start_time)
-    end_time_str = rawu.convert_df_time_to_str(end_time)
+    start_date_str = str(meas_timestamps.startdate)
+    end_date_str = str(meas_timestamps.enddate)
+    start_time_str = rawu.convert_df_time_to_str(meas_timestamps.starttime)
+    end_time_str = rawu.convert_df_time_to_str(meas_timestamps.endtime)
 
     # store standardizied real-time measurements to file
     csv_name = rawu.get_std_raw_filename(filename_parts.PC_name,
@@ -95,6 +91,21 @@ def get_std_IPG_real_meas_name(IPG_df, filename_parts):
 
     return csv_name
 
+
+def get_IPG_timestamps(real_meas_df):
+    """
+    extract start/end timestamps from IPG real-time measurement Dataframe
+    :param real_meas_df: real-tiIPG meas dataframe
+    :return: MeasTimestamps tuple
+    """
+    start_date = real_meas_df.at[0, rawu.RAW_DATE_COLUMN_NAME]
+    start_time = real_meas_df.at[0, rawu.RAW_TIME_COLUMN_NAME]
+    end_date = real_meas_df.iloc[-1].at[rawu.RAW_DATE_COLUMN_NAME]
+    end_time = real_meas_df.iloc[-1].at[rawu.RAW_TIME_COLUMN_NAME]
+
+    meas_timestamps = rawu.MeasTimestamps(str(start_date), str(start_time), str(end_date), str(end_time))
+
+    return meas_timestamps
 
 def standardize_raw_IPG(full_filename, out_dir):
     """
@@ -129,7 +140,12 @@ def standardize_raw_IPG(full_filename, out_dir):
         # standardize real-time measurements content
         real_meas_df = transform_IPG_real_meas_to_df(real_meas_lines, filename_parts)
 
-        real_meas_csv_name = get_std_IPG_real_meas_name(real_meas_df, filename_parts)
+        # get timestamps from real-time measurement
+        # it will be used for both: standardized real-time and cumulative measurements
+        meas_timestamps = get_IPG_timestamps(real_meas_df)
+
+        # store std real-time IPG measurements to file
+        real_meas_csv_name = get_std_IPG_real_meas_name(meas_timestamps, filename_parts)
         real_meas_csv_fullname = Path(out_dir) / real_meas_csv_name
         logging.info('Standardized IPG Real Meas is stored to "' + str(real_meas_csv_fullname) + '"')
         real_meas_df.to_csv(real_meas_csv_fullname)

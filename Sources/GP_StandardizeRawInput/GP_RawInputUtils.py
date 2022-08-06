@@ -37,7 +37,7 @@ PANDAS_TIME_DELIM = ':'
 # ============= STD TYPES ===============
 RawInputFilenameParts = namedtuple('FilenameParts', ['PC_name', 'Date', 'Time', 'ScriptId', 'FileExt'])
 
-
+MeasTimestamps = namedtuple('MeasTimestamps', ['startdate', 'starttime', 'enddate', 'endtime'])
 # =======================================
 
 
