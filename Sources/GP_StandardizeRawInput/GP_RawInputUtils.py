@@ -2,6 +2,7 @@ from collections import namedtuple
 from pathlib import Path
 import re
 import datetime as dt
+import pandas as pd
 import logging
 
 # =======================================
@@ -21,7 +22,7 @@ RAW_IPG_REALMEAS_FILENAME_SUFFIX = RAW_IPG_FILENAME_SUFFIX + RAW_FILENAME_DELIM 
 RAW_DATETIME_COLUMN_NAME = 'Raw_DateTime'
 RAW_DATE_COLUMN_NAME = 'Raw_Date'
 RAW_TIME_COLUMN_NAME = 'Raw_Time'
-RAW_PC_COLUMN_NAME = 'PC_Name '
+RAW_PC_NAME_COLUMN_NAME = 'PC_Name '
 # ---------------------------------------
 
 # =======================================
@@ -127,3 +128,11 @@ def get_aligned_datetime_serie(orig_df, filename_parts):
                           f'increased to: {cur_date}')
 
         aligned_df[i] = aligned_df[i].replace(cur_date.year, cur_date.month, cur_date.day)
+
+    return aligned_df
+
+
+def get_pc_name_serie(pc_name, serie_size):
+    serie = pd.Series(data=pc_name, index=range(serie_size), name=RAW_PC_NAME_COLUMN_NAME)
+
+    return serie

@@ -54,8 +54,12 @@ def transform_IPG_real_meas_to_df(meas_lines, filename_parts):
     # set standard column name for reported system times
     meas_df.rename(columns={IPG_TIME_COLUMN_NAME: rawu.RAW_TIME_COLUMN_NAME}, inplace=True)
 
+    # create column with PC NAME
+    pc_name_serie = rawu.get_pc_name_serie(filename_parts.PC_name, len(dates_serie.index))
+    # pp(pc_name_serie)
+
     # concat all data to one table
-    meas_df = pd.concat([datetimes_serie, dates_serie, meas_df], axis=1)
+    meas_df = pd.concat([pc_name_serie, datetimes_serie, dates_serie, meas_df], axis=1)
 
     # set DateTiem as Index column
     meas_df.set_index(rawu.RAW_DATETIME_COLUMN_NAME, inplace=True)
@@ -74,7 +78,6 @@ def get_std_IPG_real_meas_name(filename_parts):
                + str(filename_parts.Date) + rawu.RAW_FILENAME_DELIM \
                + str(filename_parts.Time) + rawu.RAW_FILENAME_DELIM \
                + rawu.RAW_IPG_REALMEAS_FILENAME_SUFFIX + '.csv'
-
 
     return csv_name
 
@@ -110,7 +113,7 @@ def standardize_raw_IPG(full_filename, out_dir):
 
         real_meas_df = transform_IPG_real_meas_to_df(real_meas_lines, filename_parts)
         real_meas_csv_name = get_std_IPG_real_meas_name(filename_parts)
-        real_meas_csv_fullname = Path(out_dir)/real_meas_csv_name
+        real_meas_csv_fullname = Path(out_dir) / real_meas_csv_name
 
         logging.info('Standardized IPG Real Meas is stored to "' + str(real_meas_csv_fullname) + '"')
         real_meas_df.to_csv(real_meas_csv_fullname)
