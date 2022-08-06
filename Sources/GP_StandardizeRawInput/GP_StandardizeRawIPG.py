@@ -62,22 +62,36 @@ def transform_IPG_real_meas_to_df(meas_lines, filename_parts):
     meas_df = pd.concat([pc_name_serie, datetimes_serie, dates_serie, meas_df], axis=1)
 
     # set DateTiem as Index column
-    meas_df.set_index(rawu.RAW_DATETIME_COLUMN_NAME, inplace=True)
+    # meas_df.set_index(rawu.RAW_DATETIME_COLUMN_NAME, inplace=True)
 
     # finally return the result
     return meas_df
 
 
-def get_std_IPG_real_meas_name(filename_parts):
+def get_std_IPG_real_meas_name(IPG_df, filename_parts):
     """
-
+     Construct standardized raw real-meas IPG filename
+    :param IPG_df: IPG dataframe
     :param filename_parts: RawInputFilenameParts tuple to create filename
     :return: constructed filename
     """
-    csv_name = str(filename_parts.PC_name) + rawu.RAW_FILENAME_DELIM \
-               + str(filename_parts.Date) + rawu.RAW_FILENAME_DELIM \
-               + str(filename_parts.Time) + rawu.RAW_FILENAME_DELIM \
-               + rawu.RAW_IPG_REALMEAS_FILENAME_SUFFIX + '.csv'
+    # get start/end measurement dates to be used in resulting filenames
+
+    start_date = IPG_df.at[0, rawu.RAW_DATE_COLUMN_NAME]
+    start_time = IPG_df.at[0, rawu.RAW_TIME_COLUMN_NAME]
+    end_date = IPG_df.iloc[-1].at[rawu.RAW_DATE_COLUMN_NAME]
+    end_time = IPG_df.iloc[-1].at[rawu.RAW_TIME_COLUMN_NAME]
+    start_date_str = str(start_date)
+    end_date_str = str(end_date)
+    start_time_str = rawu.convert_df_time_to_str(start_time)
+    end_time_str = rawu.convert_df_time_to_str(end_time)
+
+    # store standardizied real-time measurements to file
+    csv_name = rawu.get_std_raw_filename(filename_parts.PC_name,
+                                                   start_date_str, start_time_str,
+                                                   end_date_str, end_time_str,
+                                                   rawu.RAW_IPG_REALMEAS_FILENAME_SUFFIX,
+                                                   'csv')
 
     return csv_name
 
@@ -108,12 +122,16 @@ def standardize_raw_IPG(full_filename, out_dir):
     if (delim_pos == -1):
         logging.error('"' + filename + '": wrong format: no sections delimiter found')
     else:
+        # get parts of the IPG raw file
         real_meas_lines = IPG_content[:delim_pos]
         cum_meas_lines = IPG_content[delim_pos + 1:]
 
+        # standardize real-time measurements content
         real_meas_df = transform_IPG_real_meas_to_df(real_meas_lines, filename_parts)
-        real_meas_csv_name = get_std_IPG_real_meas_name(filename_parts)
-        real_meas_csv_fullname = Path(out_dir) / real_meas_csv_name
 
+        real_meas_csv_name = get_std_IPG_real_meas_name(real_meas_df, filename_parts)
+        real_meas_csv_fullname = Path(out_dir) / real_meas_csv_name
         logging.info('Standardized IPG Real Meas is stored to "' + str(real_meas_csv_fullname) + '"')
         real_meas_df.to_csv(real_meas_csv_fullname)
+
+        # cum_meas_df = transform_IPG_cum_meas_to_df()

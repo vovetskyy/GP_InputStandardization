@@ -11,6 +11,7 @@ import logging
 # ---------------------------------------
 # --------- Filenames constants ---------
 RAW_FILENAME_DELIM = '__'
+RAW_FILENAME_TIME_DELIM = '-'
 RAW_IPG_FILENAME_SUFFIX = 'IPG'
 
 RAW_REALMEAS_FILENAME_SUFFIX = 'RM'
@@ -22,7 +23,12 @@ RAW_IPG_REALMEAS_FILENAME_SUFFIX = RAW_IPG_FILENAME_SUFFIX + RAW_FILENAME_DELIM 
 RAW_DATETIME_COLUMN_NAME = 'Raw_DateTime'
 RAW_DATE_COLUMN_NAME = 'Raw_Date'
 RAW_TIME_COLUMN_NAME = 'Raw_Time'
-RAW_PC_NAME_COLUMN_NAME = 'PC_Name '
+RAW_PC_NAME_COLUMN_NAME = 'PC_Name'
+# ---------------------------------------
+
+# ---------------------------------------
+# --------- Common constants ---------
+PANDAS_TIME_DELIM = ':'
 # ---------------------------------------
 
 # =======================================
@@ -133,6 +139,49 @@ def get_aligned_datetime_serie(orig_df, filename_parts):
 
 
 def get_pc_name_serie(pc_name, serie_size):
+    """
+    Creates Series with constant content PC name and passed size
+    :param pc_name:
+    :param serie_size:
+    :return:
+    """
     serie = pd.Series(data=pc_name, index=range(serie_size), name=RAW_PC_NAME_COLUMN_NAME)
 
     return serie
+
+
+def convert_df_time_to_str(df_time_str):
+    """
+    coverts time in pandas.Dataframe format to string, which will be used in filenames
+    :param df_time_str:
+    :return: converted string
+    """
+    time_str = str(df_time_str)
+    # get HH MM SS from HH:MM:SS:MSEC string
+    time_list = time_str.split(PANDAS_TIME_DELIM)[:3]
+
+    time_str = str(RAW_FILENAME_TIME_DELIM).join(time_list)
+
+    return time_str
+
+
+def get_std_raw_filename(PC_name, startdate, starttime, enddate, endtime, suffix, extension):
+    """
+    Creates standardizied raw input filename from passed parts
+    :param PC_name:
+    :param startdate:
+    :param starttime:
+    :param enddate:
+    :param endtime:
+    :param suffix:
+    :param extension:
+    :return: constructed filename
+    """
+    filename = str(PC_name) + RAW_FILENAME_DELIM \
+               + str(startdate) + RAW_FILENAME_DELIM \
+               + str(starttime) + RAW_FILENAME_DELIM \
+               + str(enddate) + RAW_FILENAME_DELIM \
+               + str(endtime) + RAW_FILENAME_DELIM \
+               + suffix + '.' + extension
+
+    return filename
