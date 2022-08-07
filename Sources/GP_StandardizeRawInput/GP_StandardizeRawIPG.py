@@ -148,6 +148,6 @@ def standardize_raw_IPG(full_filename, out_dir):
         real_meas_csv_name = get_std_IPG_real_meas_name(meas_timestamps, filename_parts)
         real_meas_csv_fullname = Path(out_dir) / real_meas_csv_name
         logging.info('Standardized IPG Real Meas is stored to "' + str(real_meas_csv_fullname) + '"')
-        real_meas_df.to_csv(real_meas_csv_fullname)
+        real_meas_df.to_csv(real_meas_csv_fullname, index=False)
 
         # cum_meas_df = transform_IPG_cum_meas_to_df()
