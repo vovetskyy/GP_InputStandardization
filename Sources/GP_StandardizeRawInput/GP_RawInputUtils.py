@@ -15,15 +15,33 @@ RAW_FILENAME_TIME_DELIM = '-'
 RAW_IPG_FILENAME_SUFFIX = 'IPG'
 
 RAW_REALMEAS_FILENAME_SUFFIX = 'RM'
+RAW_CUMMEAS_FILENAME_SUFFIX = 'CUM'
+
 RAW_IPG_REALMEAS_FILENAME_SUFFIX = RAW_IPG_FILENAME_SUFFIX + RAW_FILENAME_DELIM + RAW_REALMEAS_FILENAME_SUFFIX
+RAW_IPG_CUMMEAS_FILENAME_SUFFIX = RAW_IPG_FILENAME_SUFFIX + RAW_FILENAME_DELIM + RAW_CUMMEAS_FILENAME_SUFFIX
 # ---------------------------------------
 
 # ---------------------------------------
-# --------- Table column names ---------
+# --------- Table column names ----------
+RAW_START_COLUMN_NAME_PREFIX = 'Start_'
+RAW_END_COLUMN_NAME_PREFIX = 'End_'
+
 RAW_DATETIME_COLUMN_NAME = 'Raw_DateTime'
 RAW_DATE_COLUMN_NAME = 'Raw_Date'
 RAW_TIME_COLUMN_NAME = 'Raw_Time'
 RAW_PC_NAME_COLUMN_NAME = 'PC_Name'
+
+RAW_START_DATETIME_COLUMN_NAME = RAW_START_COLUMN_NAME_PREFIX + RAW_DATETIME_COLUMN_NAME
+RAW_START_DATE_COLUMN_NAME = RAW_START_COLUMN_NAME_PREFIX + RAW_DATE_COLUMN_NAME
+RAW_START_TIME_COLUMN_NAME = RAW_START_COLUMN_NAME_PREFIX + RAW_TIME_COLUMN_NAME
+
+RAW_END_DATETIME_COLUMN_NAME = RAW_END_COLUMN_NAME_PREFIX + RAW_DATETIME_COLUMN_NAME
+RAW_END_DATE_COLUMN_NAME = RAW_END_COLUMN_NAME_PREFIX + RAW_DATE_COLUMN_NAME
+RAW_END_TIME_COLUMN_NAME = RAW_END_COLUMN_NAME_PREFIX + RAW_TIME_COLUMN_NAME
+
+
+CumulativeColumnNames = [RAW_START_DATETIME_COLUMN_NAME, RAW_START_DATE_COLUMN_NAME, RAW_START_TIME_COLUMN_NAME,
+                         RAW_END_DATETIME_COLUMN_NAME, RAW_END_DATE_COLUMN_NAME, RAW_END_TIME_COLUMN_NAME]
 # ---------------------------------------
 
 # ---------------------------------------
@@ -148,6 +166,37 @@ def get_pc_name_serie(pc_name, serie_size):
     serie = pd.Series(data=pc_name, index=range(serie_size), name=RAW_PC_NAME_COLUMN_NAME)
 
     return serie
+
+
+def create_empty_cumulative_times_df():
+    """
+    creates empty Dataframe for cumulative timestamps
+    :return: created Dataframe
+    """
+
+    empty_df = pd.DataFrame(columns=CumulativeColumnNames)
+
+    return empty_df
+
+
+def get_cumulative_times_df(timestamps):
+    """
+    creates Dataframe with begin/end timestamps
+    :param timestamps: MeasTimestamps tuple with timestamps
+    :return: created Dataframe
+    """
+    start_date = str(timestamps.startdate)
+    start_time = str(timestamps.starttime)
+    start_datetime = start_date + ' ' + start_time
+
+    end_date = str(timestamps.enddate)
+    end_time = str(timestamps.endtime)
+    end_datetime = end_date + ' ' + end_time
+
+    times_df = pd.DataFrame(columns=CumulativeColumnNames)
+    times_df.loc[0] = [start_datetime, start_date, start_time, end_datetime, end_date, end_time]
+
+    return times_df
 
 
 def convert_df_time_to_str(df_time_str):
