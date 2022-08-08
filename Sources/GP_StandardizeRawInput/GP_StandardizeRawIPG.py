@@ -32,7 +32,7 @@ def get_IPG_timestamps(real_meas_df):
     """
     extract start/end timestamps from IPG real-time measurement Dataframe
     :param real_meas_df: real-tiIPG meas dataframe
-    :return: MeasTimestamps tuple
+    :return: MeasTimestamps structure
     """
     start_date = real_meas_df.at[0, rawu.RAW_DATE_COLUMN_NAME]
     start_time = real_meas_df.at[0, rawu.RAW_TIME_COLUMN_NAME]
@@ -49,7 +49,7 @@ def transform_IPG_real_meas_to_df(meas_lines, filename_parts):
     transforms list of csv-lines, read from IPG for real measurements, to pandas Dataframe
 
     :param meas_lines: array of strings in csv-format
-    :param filename_parts: parsed RawInputFilenameParts tuple
+    :param filename_parts: parsed RawInputFilenameParts structure
 
     :return: converted pandas Dataframe
     """
@@ -87,8 +87,8 @@ def transform_IPG_real_meas_to_df(meas_lines, filename_parts):
 def get_std_IPG_real_meas_name(meas_timestamps, filename_parts):
     """
      Construct standardized raw real-meas IPG filename
-    :param meas_timestamps: MeasTimestamps tuple with timestamps
-    :param filename_parts: RawInputFilenameParts tuple with parsed original filename
+    :param meas_timestamps: MeasTimestamps structure with timestamps
+    :param filename_parts: RawInputFilenameParts structure with parsed original filename
     :return: constructed filename
     """
     # get start/end measurement dates to be used in resulting filenames
@@ -133,8 +133,8 @@ def transform_IPG_cum_meas_lines_to_df(meas_lines, filename_parts, timestamps):
     """
     converts list of lines with IPG cumulative measurements to Dataframe, and adds standard columns
     :param meas_lines: original list of lines
-    :param filename_parts: RawInputFilenameParts tuple with parsed original filename
-    :param timestamps: MeasTimestamps tuple with timestamps
+    :param filename_parts: RawInputFilenameParts structure with parsed original filename
+    :param timestamps: MeasTimestamps structure with timestamps
     :return: transformed dataframe
     """
     # convert lines to dataframe
@@ -154,8 +154,8 @@ def transform_IPG_cum_meas_lines_to_df(meas_lines, filename_parts, timestamps):
 def get_std_IPG_cum_meas_name(meas_timestamps, filename_parts):
     """
      Construct standardized raw cumulative-meas IPG filename
-    :param meas_timestamps: MeasTimestamps tuple with timestamps
-    :param filename_parts: RawInputFilenameParts tuple with parsed original filename
+    :param meas_timestamps: MeasTimestamps structure with timestamps
+    :param filename_parts: RawInputFilenameParts structure with parsed original filename
     :return: constructed filename
     """
     # get start/end measurement dates to be used in resulting filenames

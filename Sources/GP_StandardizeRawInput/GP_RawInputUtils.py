@@ -1,4 +1,4 @@
-from collections import namedtuple
+from dataclasses import dataclass
 from pathlib import Path
 import re
 import datetime as dt
@@ -39,7 +39,6 @@ RAW_END_DATETIME_COLUMN_NAME = RAW_END_COLUMN_NAME_PREFIX + RAW_DATETIME_COLUMN_
 RAW_END_DATE_COLUMN_NAME = RAW_END_COLUMN_NAME_PREFIX + RAW_DATE_COLUMN_NAME
 RAW_END_TIME_COLUMN_NAME = RAW_END_COLUMN_NAME_PREFIX + RAW_TIME_COLUMN_NAME
 
-
 CumulativeColumnNames = [RAW_START_DATETIME_COLUMN_NAME, RAW_START_DATE_COLUMN_NAME, RAW_START_TIME_COLUMN_NAME,
                          RAW_END_DATETIME_COLUMN_NAME, RAW_END_DATE_COLUMN_NAME, RAW_END_TIME_COLUMN_NAME]
 # ---------------------------------------
@@ -47,15 +46,30 @@ CumulativeColumnNames = [RAW_START_DATETIME_COLUMN_NAME, RAW_START_DATE_COLUMN_N
 # ---------------------------------------
 # --------- Common constants ---------
 PANDAS_TIME_DELIM = ':'
+
+
 # ---------------------------------------
 
 # =======================================
 
 # =======================================
 # ============= STD TYPES ===============
-RawInputFilenameParts = namedtuple('FilenameParts', ['PC_name', 'Date', 'Time', 'ScriptId', 'FileExt'])
+@dataclass()
+class RawInputFilenameParts:
+    PC_name: str
+    Date: str
+    Time: str
+    ScriptId: str
+    FileExt: str
 
-MeasTimestamps = namedtuple('MeasTimestamps', ['startdate', 'starttime', 'enddate', 'endtime'])
+
+@dataclass()
+class MeasTimestamps:
+    startdate: str
+    starttime: str
+    enddate: str
+    endtime: str
+
 # =======================================
 
 
@@ -67,7 +81,7 @@ def get_filename_parts(full_filename):
     E.g. DESKTOP-FP4OP26_2022-07-30_13-35-55_IPG.csv,
     which is created by Intel Power Gadget (IPG) utility
 
-    Returns the corresponding FilenameParts tuple
+    Returns the corresponding FilenameParts structure
     """
     logging.debug('Start parsing of file ' + '"' + full_filename + '"')
 
@@ -111,7 +125,7 @@ def get_aligned_datetime_serie(orig_df, filename_parts):
     calculates correct dates for passed datafraeme, depends on passed filename parts
 
     :param orig_df: Dataframe with inaligned dates
-    :param filename_parts: parsed RawInputFilenameParts tuple
+    :param filename_parts: parsed RawInputFilenameParts structure
     :return: aligned Serie
     """
     logging.debug('start datetime alignment')
@@ -182,7 +196,7 @@ def create_empty_cumulative_times_df():
 def get_cumulative_times_df(timestamps):
     """
     creates Dataframe with begin/end timestamps
-    :param timestamps: MeasTimestamps tuple with timestamps
+    :param timestamps: MeasTimestamps structure with timestamps
     :return: created Dataframe
     """
     start_date = str(timestamps.startdate)
