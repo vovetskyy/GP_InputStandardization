@@ -56,19 +56,19 @@ PANDAS_TIME_DELIM = ':'
 # ============= STD TYPES ===============
 @dataclass()
 class RawInputFilenameParts:
-    PC_name: str
-    Date: str
-    Time: str
-    ScriptId: str
-    FileExt: str
+    PC_name: str = ''
+    Date: str = ''
+    Time: str = ''
+    ScriptId: str = ''
+    FileExt: str = ''
 
 
 @dataclass()
 class MeasTimestamps:
-    startdate: str
-    starttime: str
-    enddate: str
-    endtime: str
+    startdate: str = ''
+    starttime: str = ''
+    enddate: str = ''
+    endtime: str = ''
 
 # =======================================
 
