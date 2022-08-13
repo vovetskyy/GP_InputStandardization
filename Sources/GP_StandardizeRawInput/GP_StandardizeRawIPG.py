@@ -232,7 +232,8 @@ def standardize_raw_IPG_in_dir(parsing_dir, out_dir):
     :param out_dir:
     :return: None
     """
-    # parse IPG raw inputs
+    logging.info('Start standardization of raw IPG files from "' + str(parsing_dir) + '" to "' + str(out_dir) + '"')
+
     parse_path = Path(parsing_dir)
     file_list = (list(parse_path.glob('*__IPG.*')))
 
