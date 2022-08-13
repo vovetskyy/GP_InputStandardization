@@ -58,7 +58,7 @@ def transform_IPG_real_meas_to_df(meas_lines, filename_parts):
     meas_df = pd.read_csv(io.StringIO('\n'.join(meas_lines)), delim_whitespace=False)
 
     # set type of 'System Time' column to datetime manually, as it could not be recognized automatically
-    # And then rename the resulting Datetime columnn accordingly
+    # And then rename the resulting Datetime column accordingly
     times_serie = pd.to_datetime(meas_df['System Time'], format="%H:%M:%S:%f")
     datetimes_serie = rawu.get_aligned_datetime_serie(times_serie, filename_parts)
     datetimes_serie.name = rawu.RAW_DATETIME_COLUMN_NAME
@@ -77,7 +77,7 @@ def transform_IPG_real_meas_to_df(meas_lines, filename_parts):
     # concat all data to one table
     meas_df = pd.concat([pc_name_serie, datetimes_serie, dates_serie, meas_df], axis=1)
 
-    # set DateTiem as Index column
+    # set DateTime as Index column
     # meas_df.set_index(rawu.RAW_DATETIME_COLUMN_NAME, inplace=True)
 
     # finally return the result
@@ -98,7 +98,7 @@ def get_std_IPG_real_meas_name(meas_timestamps, filename_parts):
     start_time_str = rawu.convert_df_time_to_str(meas_timestamps.starttime)
     end_time_str = rawu.convert_df_time_to_str(meas_timestamps.endtime)
 
-    # store standardizied real-time measurements to file
+    # store standardized real-time measurements to file
     csv_name = rawu.get_std_raw_filename(filename_parts.PC_name,
                                                    start_date_str, start_time_str,
                                                    end_date_str, end_time_str,
@@ -165,7 +165,7 @@ def get_std_IPG_cum_meas_name(meas_timestamps, filename_parts):
     start_time_str = rawu.convert_df_time_to_str(meas_timestamps.starttime)
     end_time_str = rawu.convert_df_time_to_str(meas_timestamps.endtime)
 
-    # store standardizied real-time measurements to file
+    # store standardized real-time measurements to file
     csv_name = rawu.get_std_raw_filename(filename_parts.PC_name,
                                                    start_date_str, start_time_str,
                                                    end_date_str, end_time_str,
@@ -183,7 +183,7 @@ def standardize_raw_IPG_file(full_filename, out_dir):
         - csv-file with cumulative measurements (converted from text format, present in raw file)
 
     :param full_filename: full name (including full path) of the raw IPG file
-    :param out_dir: full path to the ditectory to store resulting file(s)
+    :param out_dir: full path to the directory to store resulting file(s)
     :return: None
     """
     logging.info('Start handling of file ' + '"' + full_filename + '"')
