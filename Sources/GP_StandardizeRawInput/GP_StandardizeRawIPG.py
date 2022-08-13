@@ -175,7 +175,7 @@ def get_std_IPG_cum_meas_name(meas_timestamps, filename_parts):
     return csv_name
 
 
-def standardize_raw_IPG(full_filename, out_dir):
+def standardize_raw_IPG_file(full_filename, out_dir):
     """
     create the following files from the raw IPG file, created by Intel Power Gadget utility (
     https://www.intel.com/content/www/us/en/developer/articles/tool/power-gadget.html):

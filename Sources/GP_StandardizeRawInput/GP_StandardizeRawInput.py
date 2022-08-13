@@ -6,6 +6,8 @@ import GP_StandardizeRawIPG as ipg
 
 DEF_OUT_DIR = '__STD_RAW_OUTPUT'
 
+
+
 if __name__ == "__main__":
     # let's start with logging
     logging.basicConfig(level=logging.DEBUG, format=' %(asctime)s - %(levelname)s - %(message)s')
@@ -35,7 +37,7 @@ if __name__ == "__main__":
     file_list = (list(parse_path.glob('*__IPG.*')))
 
     for file in file_list:
-        ipg.standardize_raw_IPG(str(file), out_dir)
+        ipg.standardize_raw_IPG_file(str(file), out_dir)
         # pp(str(file))
 
     # ipg.standardize_raw_IPG(r'c:\Wit\Scripts\GreenParrot\FastShot1\RawOutput\DESKTOP-FP4OP26\DESKTOP-FP4OP26__2022-07-31_12-16-45__IPG.csv',
