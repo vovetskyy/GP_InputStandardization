@@ -70,10 +70,11 @@ class MeasTimestamps:
     enddate: str = ''
     endtime: str = ''
 
+
 # =======================================
 
 
-def get_filename_parts(full_filename):
+def get_filename_parts(full_filename: str):
     """
     Function to parse filenames of the PG raw input files.
     Expected format of the name:
