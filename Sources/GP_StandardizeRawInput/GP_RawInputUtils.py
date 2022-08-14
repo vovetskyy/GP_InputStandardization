@@ -12,8 +12,10 @@ import logging
 # --------- Filenames constants ---------
 RAW_FILENAME_DELIM = '__'
 RAW_FILENAME_TIME_DELIM = '-'
+
 RAW_IPG_FILENAME_SUFFIX = 'IPG'
 RAW_SCRIPT2_FILENAME_SUFFIX = 'Script2'
+RAW_FILENAME_SUFFIXES_LIST = RAW_IPG_FILENAME_SUFFIX + '|' + RAW_SCRIPT2_FILENAME_SUFFIX
 
 RAW_REALMEAS_FILENAME_SUFFIX = 'RM'
 RAW_CUMMEAS_FILENAME_SUFFIX = 'CUM'
@@ -99,7 +101,7 @@ def get_filename_parts(full_filename: str):
     logging.debug('Start analysis of filename ' + '"' + pure_filename + '"')
 
     # filename_regex = re.compile(r'(^(\w*))_(((\d\d\d\d)-(\d\d)-(\d\d))_((\d\d)-(\d\d)-(\d\d)(.*))_(IPG|Script2)$)')
-    regex_str = r'(^(\w*)(.*))__(((\d\d\d\d)-(\d\d)-(\d\d))_(.*))__' + '((' + RAW_IPG_FILENAME_SUFFIX + ')$)'
+    regex_str = r'(^(\w*)(.*))__(((\d\d\d\d)-(\d\d)-(\d\d))_(.*))__' + '(((' + RAW_FILENAME_SUFFIXES_LIST + '))$)'
     filename_regex = re.compile(regex_str)
     filename_parts_re = filename_regex.search(pure_filename)
 
