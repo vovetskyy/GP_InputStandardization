@@ -235,7 +235,7 @@ def standardize_raw_IPG_in_dir(parsing_dir, out_dir):
     logging.info('Start standardization of raw IPG files from "' + str(parsing_dir) + '" to "' + str(out_dir) + '"')
 
     parse_path = Path(parsing_dir)
-    file_list = (list(parse_path.glob('*__IPG.*')))
+    file_list = (list(parse_path.glob('*' + rawu.RAW_FILENAME_DELIM + rawu.RAW_IPG_FILENAME_SUFFIX + '.*')))
 
     for file in file_list:
         standardize_raw_IPG_file(str(file), out_dir)
