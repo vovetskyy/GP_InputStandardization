@@ -3,6 +3,7 @@ import logging
 from pathlib import Path
 from pprint import pprint as pp
 import GP_StandardizeRawIPG as ipg
+import GP_StandardizeRawScript2 as sc2
 
 DEF_OUT_DIR = '__STD_RAW_OUTPUT'
 
@@ -32,3 +33,4 @@ if __name__ == "__main__":
     logging.info('Results will be stored to  "' + out_dir + '"')
 
     ipg.standardize_raw_IPG_in_dir(parsing_dir, out_dir)
+    sc2.standardize_raw_Script2_in_dir(parsing_dir, out_dir)
