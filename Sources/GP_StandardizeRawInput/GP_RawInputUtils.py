@@ -67,7 +67,7 @@ class RawInputFilenameParts:
 
 
 @dataclass()
-class MeasTimestamps:
+class CumMeasTimestamps:
     startdate: str = ''
     starttime: str = ''
     enddate: str = ''
@@ -144,7 +144,7 @@ def get_aligned_datetime_serie(orig_df, filename_parts):
     logging.debug('Recognized start time from filename: ' + str(start_time))
 
     # calculate date of the first measurement:
-    #   - the same day as in start_date if start_time stored in filenam is smaller than the first time in the table
+    #   - the same day as in start_date if start_time stored in filename is smaller than the first time in the table
     #   - start_date + 1 day otherwise, as measurement seem to be started already on the next day
     first_meas_time = aligned_df[0].time()
 
@@ -152,10 +152,10 @@ def get_aligned_datetime_serie(orig_df, filename_parts):
 
     if (first_meas_time < start_time):
         start_date = start_date + dt.timedelta(days=1)
-        logging.debug('As start time from the table is smaller than in the filaname, startdate was increased tó: '
+        logging.debug('As start time from the table is smaller than in the filename, startdate was increased tó: '
                       + str(start_date))
 
-    # set alignd date to the 1st element
+    # set aligned date to the 1st element
     aligned_df[0] = aligned_df[0].replace(start_date.year, start_date.month, start_date.day)
 
     # set aligned dates for all other element, considering possible day wraparound
@@ -234,7 +234,7 @@ def convert_df_time_to_str(df_time_str):
 
 def get_std_raw_filename(PC_name, startdate, starttime, enddate, endtime, suffix, extension):
     """
-    Creates standardizied raw input filename from passed parts
+    Creates standardized raw input filename from passed parts
     :param PC_name:
     :param startdate:
     :param starttime:

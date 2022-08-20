@@ -39,7 +39,7 @@ def get_IPG_timestamps(real_meas_df):
     end_date = real_meas_df.iloc[-1].at[rawu.RAW_DATE_COLUMN_NAME]
     end_time = real_meas_df.iloc[-1].at[rawu.RAW_TIME_COLUMN_NAME]
 
-    meas_timestamps = rawu.MeasTimestamps(str(start_date), str(start_time), str(end_date), str(end_time))
+    meas_timestamps = rawu.CumMeasTimestamps(str(start_date), str(start_time), str(end_date), str(end_time))
 
     return meas_timestamps
 
