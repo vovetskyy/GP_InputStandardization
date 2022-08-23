@@ -42,8 +42,10 @@ RAW_END_DATETIME_COLUMN_NAME = RAW_END_COLUMN_NAME_PREFIX + RAW_DATETIME_COLUMN_
 RAW_END_DATE_COLUMN_NAME = RAW_END_COLUMN_NAME_PREFIX + RAW_DATE_COLUMN_NAME
 RAW_END_TIME_COLUMN_NAME = RAW_END_COLUMN_NAME_PREFIX + RAW_TIME_COLUMN_NAME
 
-CumulativeColumnNames = [RAW_START_DATETIME_COLUMN_NAME, RAW_START_DATE_COLUMN_NAME, RAW_START_TIME_COLUMN_NAME,
-                         RAW_END_DATETIME_COLUMN_NAME, RAW_END_DATE_COLUMN_NAME, RAW_END_TIME_COLUMN_NAME]
+
+
+TIMESTAMPS_COLUMN_NAMES_CUM = [RAW_START_DATETIME_COLUMN_NAME, RAW_START_DATE_COLUMN_NAME, RAW_START_TIME_COLUMN_NAME,
+                               RAW_END_DATETIME_COLUMN_NAME, RAW_END_DATE_COLUMN_NAME, RAW_END_TIME_COLUMN_NAME]
 # ---------------------------------------
 
 # ---------------------------------------
@@ -72,7 +74,6 @@ class CumMeasTimestamps:
     starttime: str = ''
     enddate: str = ''
     endtime: str = ''
-
 
 # =======================================
 
@@ -192,7 +193,7 @@ def create_empty_cumulative_times_df():
     :return: created Dataframe
     """
 
-    empty_df = pd.DataFrame(columns=CumulativeColumnNames)
+    empty_df = pd.DataFrame(columns=TIMESTAMPS_COLUMN_NAMES_CUM)
 
     return empty_df
 
@@ -211,7 +212,7 @@ def get_cumulative_times_df(timestamps):
     end_time = str(timestamps.endtime)
     end_datetime = end_date + ' ' + end_time
 
-    times_df = pd.DataFrame(columns=CumulativeColumnNames)
+    times_df = pd.DataFrame(columns=TIMESTAMPS_COLUMN_NAMES_CUM)
     times_df.loc[0] = [start_datetime, start_date, start_time, end_datetime, end_date, end_time]
 
     return times_df

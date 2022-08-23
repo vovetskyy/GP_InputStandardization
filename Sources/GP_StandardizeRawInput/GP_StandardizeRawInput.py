@@ -32,5 +32,5 @@ if __name__ == "__main__":
     logging.info('Start parsing of "' + parsing_dir + '"')
     logging.info('Results will be stored to  "' + out_dir + '"')
 
-    ipg.standardize_raw_IPG_in_dir(parsing_dir, out_dir)
+    # ipg.standardize_raw_IPG_in_dir(parsing_dir, out_dir)
     sc2.standardize_raw_Script2_in_dir(parsing_dir, out_dir)
