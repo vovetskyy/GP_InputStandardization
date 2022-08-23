@@ -1,10 +1,37 @@
 import logging
 from pathlib import Path
 import json
+from datetime import datetime
 import pandas as pd
 from pprint import pprint as pp
 
 import GP_RawInputUtils as rawu
+
+
+def get_datetime_df(timestamp):
+
+    # convert to datetime without timezone, as timezone seems to be irrelevant
+    dt = datetime.strptime(timestamp, '%Y_%m_%d_%H_%M_%S_%f_')
+    # pp(dt)
+
+    start_date = dt.date().isoformat()
+    start_time = dt.time().isoformat()
+    start_datetime = rawu.get_date_time_str(start_date, start_time)
+
+    dt_df = pd.DataFrame(list(zip([start_datetime], [start_date], [start_time])))
+    # dt_df = pd.DataFrame(columns=rawu.TIMESTAMPS_COLUMN_NAMES_RM)
+
+    pp(dt_df)
+
+    return dt_df
+
+
+def handle_script2_record(timestamp, rec):
+    res_dict = {}
+
+    logging.info('Start handling of timestamp ' + timestamp)
+
+    dt_df = get_datetime_df(timestamp)
 
 
 def standardize_raw_Script2_file(full_filename: str, out_dir: str):
@@ -24,7 +51,10 @@ def standardize_raw_Script2_file(full_filename: str, out_dir: str):
     # as dict keys are not mandatory sorted, get timestamps sorted by time
     times_list = list(json_dict.keys())
     times_list.sort()
-    # pp(type(json_dict[times_list[0]]))
+    # test_item = json_dict[times_list[0]]
+
+    handle_script2_record(times_list[0], json_dict[times_list[0]])
+
 
 def standardize_raw_Script2_in_dir(parsing_dir: str, out_dir: str):
     """

@@ -53,7 +53,7 @@ TIMESTAMPS_COLUMN_NAMES_CUM = [RAW_START_DATETIME_COLUMN_NAME, RAW_START_DATE_CO
 # --------- Common constants ---------
 PANDAS_TIME_DELIM = ':'
 
-GP_DELIM_BETWEEN_DATE_AND_TIME=' '
+GP_DELIM_BETWEEN_DATE_AND_TIME = ' '
 
 
 # ---------------------------------------
@@ -201,6 +201,10 @@ def create_empty_cumulative_times_df():
     return empty_df
 
 
+def get_date_time_str(date, time):
+    return date + GP_DELIM_BETWEEN_DATE_AND_TIME + time
+
+
 def get_cumulative_times_df(timestamps):
     """
     creates Dataframe with begin/end timestamps
@@ -209,11 +213,11 @@ def get_cumulative_times_df(timestamps):
     """
     start_date = str(timestamps.startdate)
     start_time = str(timestamps.starttime)
-    start_datetime = start_date + GP_DELIM_BETWEEN_DATE_AND_TIME + start_time
+    start_datetime = get_date_time_str(start_date, start_time)
 
     end_date = str(timestamps.enddate)
     end_time = str(timestamps.endtime)
-    end_datetime = end_date + GP_DELIM_BETWEEN_DATE_AND_TIME + end_time
+    end_datetime = get_date_time_str(end_date, end_time)
 
     times_df = pd.DataFrame(columns=TIMESTAMPS_COLUMN_NAMES_CUM)
     times_df.loc[0] = [start_datetime, start_date, start_time, end_datetime, end_date, end_time]
