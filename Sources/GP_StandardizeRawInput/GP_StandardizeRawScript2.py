@@ -8,20 +8,21 @@ from pprint import pprint as pp
 import GP_RawInputUtils as rawu
 
 
-def get_datetime_df(timestamp):
+def get_datetime_df_raw(timestamp):
+    """
+    creates DataFrame with standardized date/time info raw
+    :param timestamp:
+    :return: created DataFrame
+    """
 
     # convert to datetime without timezone, as timezone seems to be irrelevant
     dt = datetime.strptime(timestamp, '%Y_%m_%d_%H_%M_%S_%f_')
-    # pp(dt)
 
     start_date = dt.date().isoformat()
     start_time = dt.time().isoformat()
     start_datetime = rawu.get_date_time_str(start_date, start_time)
 
     dt_df = pd.DataFrame(list(zip([start_datetime], [start_date], [start_time])))
-    # dt_df = pd.DataFrame(columns=rawu.TIMESTAMPS_COLUMN_NAMES_RM)
-
-    pp(dt_df)
 
     return dt_df
 
@@ -31,7 +32,9 @@ def handle_script2_record(timestamp, rec):
 
     logging.info('Start handling of timestamp ' + timestamp)
 
-    dt_df = get_datetime_df(timestamp)
+    dt_df = get_datetime_df_raw(timestamp)
+
+    pp(dt_df)
 
 
 def standardize_raw_Script2_file(full_filename: str, out_dir: str):
