@@ -8,6 +8,30 @@ from pprint import pprint as pp
 import GP_RawInputUtils as rawu
 
 
+# =======================================
+# ============= CONSTANTS ===============
+
+
+# ---------------------------------------
+
+
+def get_sys_stats_dict(rec: dict) -> dict:
+    """
+    extracts SYS_Stats information
+    :param rec: one Script2 json record
+    :return: extracts information dictionary
+    """
+    return rec[0]['SYS Stats']
+
+
+def get_cpu_stats_dict(rec: dict) -> dict:
+    """
+    extracts CPU_Stats information
+    :param rec: one Script2 json record
+    :return: extracts information dictionary
+    """
+    return rec[0]['CPU Stats']
+
 def get_datetime_df_raw(timestamp):
     """
     creates DataFrame with standardized date/time info raw
@@ -29,14 +53,22 @@ def get_datetime_df_raw(timestamp):
     return dt_df
 
 
+def get_static_machine_info_raw(rec: dict) -> pd.DataFrame:
+    sys_stats = get_sys_stats_dict(rec)
+    cpu_stats = get_sys_stats_dict(rec)
+
+    pp(cpu_stats)
+
+    pass
+
+
 def handle_script2_record(timestamp, rec):
     res_dict = {}
 
     logging.info('Start handling of timestamp ' + timestamp)
 
     dt_df = get_datetime_df_raw(timestamp)
-
-    pp(dt_df)
+    machine_info_df = get_static_machine_info_raw(rec)
 
 
 def standardize_raw_Script2_file(full_filename: str, out_dir: str):
