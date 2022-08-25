@@ -15,6 +15,8 @@ def get_datetime_df_raw(timestamp):
     :return: created DataFrame
     """
 
+    logging.info('Create DataFrame of timestamp ' + timestamp)
+
     # convert to datetime without timezone, as timezone seems to be irrelevant
     dt = datetime.strptime(timestamp, '%Y_%m_%d_%H_%M_%S_%f_')
 
