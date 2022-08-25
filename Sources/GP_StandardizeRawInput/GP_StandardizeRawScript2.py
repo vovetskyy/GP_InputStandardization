@@ -17,24 +17,61 @@ import GP_RawInputUtils as rawu
 
 def get_sys_stats_dict(rec: dict) -> dict:
     """
-    extracts SYS_Stats information
+    extracts SYS_Stats information from Script2 json dictionary
     :param rec: one Script2 json record
-    :return: extracts information dictionary
+    :return: extracted information dictionary
     """
     return rec[0]['SYS Stats']
 
 
 def get_cpu_stats_dict(rec: dict) -> dict:
     """
-    extracts CPU_Stats information
+    extracts CPU_Stats information  from Script2 json dictionary
     :param rec: one Script2 json record
-    :return: extracts information dictionary
+    :return: extracted information dictionary
     """
-    return rec[0]['CPU Stats']
+    return rec[1]['CPU Stats']
 
-def get_datetime_df_raw(timestamp):
+
+def get_pc_name(rec: dict):
     """
-    creates DataFrame with standardized date/time info raw
+    extracts PC name information  from Script2 json dictionary
+    :param rec: one Script2 json record
+    :return: extracted information
+    """
+    return get_sys_stats_dict(rec)['Node']
+
+
+def get_cpu_type(rec: dict):
+    """
+    extracts CPU type information  from Script2 json dictionary
+    :param rec: one Script2 json record
+    :return: extracted information
+    """
+    return get_sys_stats_dict(rec)['Machine']
+
+
+def get_cpu_details(rec: dict):
+    """
+    extracts CPU detailed information  from Script2 json dictionary
+    :param rec: one Script2 json record
+    :return: extracted information
+    """
+    return get_sys_stats_dict(rec)['Processor']
+
+
+def get_cpu_num_cores(rec: dict):
+    """
+    extracts CPU number of cores information  from Script2 json dictionary
+    :param rec: one Script2 json record
+    :return: extracted information
+    """
+    return get_cpu_stats_dict(rec)['CPU: Num of cores']
+
+
+def get_datetime_df_row(timestamp):
+    """
+    creates DataFrame row with standardized date/time info
     :param timestamp:
     :return: created DataFrame
     """
@@ -53,13 +90,20 @@ def get_datetime_df_raw(timestamp):
     return dt_df
 
 
-def get_static_machine_info_raw(rec: dict) -> pd.DataFrame:
-    sys_stats = get_sys_stats_dict(rec)
-    cpu_stats = get_sys_stats_dict(rec)
+def get_static_machine_info_row(rec: dict) -> pd.DataFrame:
+    """
+    creates DataFrame raw with standardized static system info
+    :param rec: one Script2 json record
+    :return: created DataFrame
+    """
+    pc_name = get_pc_name(rec)
+    cpu_type = get_cpu_type(rec)
+    cpu_details = get_cpu_details(rec)
+    num_cores = get_cpu_num_cores(rec)
 
-    pp(cpu_stats)
+    info_df = pd.DataFrame(list(zip([pc_name], [cpu_type], [cpu_details], [num_cores])))
 
-    pass
+    return info_df
 
 
 def handle_script2_record(timestamp, rec):
@@ -67,8 +111,9 @@ def handle_script2_record(timestamp, rec):
 
     logging.info('Start handling of timestamp ' + timestamp)
 
-    dt_df = get_datetime_df_raw(timestamp)
-    machine_info_df = get_static_machine_info_raw(rec)
+    dt_df = get_datetime_df_row(timestamp)
+    machine_info_df = get_static_machine_info_row(rec)
+    pp(machine_info_df)
 
 
 def standardize_raw_Script2_file(full_filename: str, out_dir: str):
