@@ -33,6 +33,24 @@ def get_cpu_stats_dict(rec: dict) -> dict:
     return rec[1]['CPU Stats']
 
 
+def get_disk_io_bytes_stats_list(rec: dict) -> list:
+    """
+    extracts Disk IO information (in bytes) from Script2 json dictionary
+    :param rec: one Script2 json record
+    :return: extracted information list
+    """
+    return get_cpu_stats_dict(rec)['IO, read/write, bytes']
+
+
+def get_disk_io_ms_stats_list(rec: dict) -> list:
+    """
+    extracts Disk IO information (in ms) from Script2 json dictionary
+    :param rec: one Script2 json record
+    :return: extracted information list
+    """
+    return get_cpu_stats_dict(rec)['IO, read/write, milliseconds']
+
+
 def get_pc_name(rec: dict):
     """
     extracts PC name information  from Script2 json dictionary
@@ -69,6 +87,42 @@ def get_cpu_num_cores(rec: dict):
     return get_cpu_stats_dict(rec)['CPU: Num of cores']
 
 
+def get_disk_io_read_total_bytes(rec: dict):
+    """
+    extracts cumulative read bytes Disk IO  from Script2 json dictionary
+    :param rec: one Script2 json record
+    :return: extracted information
+    """
+    return get_disk_io_bytes_stats_list(rec)[0]
+
+
+def get_disk_io_written_total_bytes(rec: dict):
+    """
+    extracts cumulative written bytes Disk IO  from Script2 json dictionary
+    :param rec: one Script2 json record
+    :return: extracted information
+    """
+    return get_disk_io_bytes_stats_list(rec)[1]
+
+
+def get_disk_io_read_total_ms(rec: dict):
+    """
+    extracts cumulative read ms Disk IO  from Script2 json dictionary
+    :param rec: one Script2 json record
+    :return: extracted information
+    """
+    return get_disk_io_ms_stats_list(rec)[0]
+
+
+def get_disk_io_written_total_ms(rec: dict):
+    """
+    extracts cumulative written ms Disk IO  from Script2 json dictionary
+    :param rec: one Script2 json record
+    :return: extracted information
+    """
+    return get_disk_io_ms_stats_list(rec)[1]
+
+
 def get_datetime_df_row(timestamp):
     """
     creates DataFrame row with standardized date/time info
@@ -96,12 +150,32 @@ def get_static_machine_info_row(rec: dict) -> pd.DataFrame:
     :param rec: one Script2 json record
     :return: created DataFrame
     """
+    logging.info('Create static machine info DataFrame')
+
     pc_name = get_pc_name(rec)
     cpu_type = get_cpu_type(rec)
     cpu_details = get_cpu_details(rec)
     num_cores = get_cpu_num_cores(rec)
 
     info_df = pd.DataFrame(list(zip([pc_name], [cpu_type], [cpu_details], [num_cores])))
+
+    return info_df
+
+
+def get_disk_io_info_row(rec: dict) -> pd.DataFrame:
+    """
+    creates DataFrame raw with standardized info about Disk IO
+    :param rec: one Script2 json record
+    :return: created DataFrame
+    """
+    logging.info('Create disk IO DataFrame')
+
+    read_bytes = get_disk_io_read_total_bytes(rec)
+    written_bytes = get_disk_io_written_total_bytes(rec)
+    read_ms = get_disk_io_read_total_ms(rec)
+    written_ms = get_disk_io_written_total_ms(rec)
+
+    info_df = pd.DataFrame(list(zip([read_bytes], [written_bytes], [read_ms], [written_ms])))
 
     return info_df
 
@@ -113,7 +187,8 @@ def handle_script2_record(timestamp, rec):
 
     dt_df = get_datetime_df_row(timestamp)
     machine_info_df = get_static_machine_info_row(rec)
-    pp(machine_info_df)
+    disk_io_info_df = get_disk_io_info_row(rec)
+    pp(disk_io_info_df)
 
 
 def standardize_raw_Script2_file(full_filename: str, out_dir: str):
