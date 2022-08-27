@@ -51,6 +51,15 @@ def get_disk_io_ms_stats_list(rec: dict) -> list:
     return get_cpu_stats_dict(rec)['IO, read/write, milliseconds']
 
 
+def get_virtual_mem_bytes_stats_list(rec: dict) -> list:
+    """
+    extracts Virtual Memory (in bytes) from Script2 json dictionary
+    :param rec: one Script2 json record
+    :return: extracted information list
+    """
+    return get_cpu_stats_dict(rec)['MEM: total/used/available, bytes']
+
+
 def get_pc_name(rec: dict):
     """
     extracts PC name information  from Script2 json dictionary
@@ -123,6 +132,33 @@ def get_disk_io_written_total_ms(rec: dict):
     return get_disk_io_ms_stats_list(rec)[1]
 
 
+def get_virtual_mem_total_bytes(rec: dict):
+    """
+    extracts total Virtual memory bytes from Script2 json dictionary
+    :param rec: one Script2 json record
+    :return: extracted information
+    """
+    return get_virtual_mem_bytes_stats_list(rec)[0]
+
+
+def get_virtual_mem_used_bytes(rec: dict):
+    """
+    extracts used Virtual memory bytes from Script2 json dictionary
+    :param rec: one Script2 json record
+    :return: extracted information
+    """
+    return get_virtual_mem_bytes_stats_list(rec)[1]
+
+
+def get_virtual_mem_avail_bytes(rec: dict):
+    """
+    extracts available Virtual memory bytes from Script2 json dictionary
+    :param rec: one Script2 json record
+    :return: extracted information
+    """
+    return get_virtual_mem_bytes_stats_list(rec)[2]
+
+
 def get_datetime_df_row(timestamp):
     """
     creates DataFrame row with standardized date/time info
@@ -150,7 +186,7 @@ def get_static_machine_info_row(rec: dict) -> pd.DataFrame:
     :param rec: one Script2 json record
     :return: created DataFrame
     """
-    logging.info('Create static machine info DataFrame')
+    logging.info('Create static machine info DataFrame row')
 
     pc_name = get_pc_name(rec)
     cpu_type = get_cpu_type(rec)
@@ -168,7 +204,7 @@ def get_disk_io_info_row(rec: dict) -> pd.DataFrame:
     :param rec: one Script2 json record
     :return: created DataFrame
     """
-    logging.info('Create disk IO DataFrame')
+    logging.info('Create disk IO DataFrame row')
 
     read_bytes = get_disk_io_read_total_bytes(rec)
     written_bytes = get_disk_io_written_total_bytes(rec)
@@ -176,6 +212,23 @@ def get_disk_io_info_row(rec: dict) -> pd.DataFrame:
     written_ms = get_disk_io_written_total_ms(rec)
 
     info_df = pd.DataFrame(list(zip([read_bytes], [written_bytes], [read_ms], [written_ms])))
+
+    return info_df
+
+
+def get_virtual_mem_info_row(rec: dict) -> pd.DataFrame:
+    """
+    creates DataFrame raw with standardized info about Disk IO
+    :param rec: one Script2 json record
+    :return: created DataFrame
+    """
+    logging.info('Create Virtual Mem DataFrame row')
+
+    total_bytes = get_virtual_mem_total_bytes(rec)
+    used_bytes = get_virtual_mem_used_bytes(rec)
+    avail_bytes = get_virtual_mem_avail_bytes(rec)
+
+    info_df = pd.DataFrame(list(zip([total_bytes], [used_bytes], [avail_bytes])))
 
     return info_df
 
@@ -188,7 +241,9 @@ def handle_script2_record(timestamp, rec):
     dt_df = get_datetime_df_row(timestamp)
     machine_info_df = get_static_machine_info_row(rec)
     disk_io_info_df = get_disk_io_info_row(rec)
-    pp(disk_io_info_df)
+    virtual_mem_info_df = get_virtual_mem_info_row(rec)
+
+    pp(virtual_mem_info_df)
 
 
 def standardize_raw_Script2_file(full_filename: str, out_dir: str):
