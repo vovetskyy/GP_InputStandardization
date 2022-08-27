@@ -60,6 +60,15 @@ def get_virtual_mem_bytes_stats_list(rec: dict) -> list:
     return get_cpu_stats_dict(rec)['MEM: total/used/available, bytes']
 
 
+def get_total_network_bytes_stats_list(rec: dict) -> list:
+    """
+    extracts total Network Info (in bytes) from Script2 json dictionary
+    :param rec: one Script2 json record
+    :return: extracted information list
+    """
+    return get_cpu_stats_dict(rec)['NET Total, sent/received, bytes']
+
+
 def get_pc_name(rec: dict):
     """
     extracts PC name information  from Script2 json dictionary
@@ -159,6 +168,24 @@ def get_virtual_mem_avail_bytes(rec: dict):
     return get_virtual_mem_bytes_stats_list(rec)[2]
 
 
+def get_network_total_sent_bytes(rec: dict):
+    """
+    extracts total network sent bytes from Script2 json dictionary
+    :param rec: one Script2 json record
+    :return: extracted information
+    """
+    return get_total_network_bytes_stats_list(rec)[0]
+
+
+def get_network_total_received_bytes(rec: dict):
+    """
+    extracts total network sent bytes from Script2 json dictionary
+    :param rec: one Script2 json record
+    :return: extracted information
+    """
+    return get_total_network_bytes_stats_list(rec)[1]
+
+
 def get_datetime_df_row(timestamp):
     """
     creates DataFrame row with standardized date/time info
@@ -233,6 +260,23 @@ def get_virtual_mem_info_row(rec: dict) -> pd.DataFrame:
     return info_df
 
 
+def get_network_total_info_row(rec: dict) -> pd.DataFrame:
+    """
+    creates DataFrame raw with standardized info about Disk IO
+    :param rec: one Script2 json record
+    :return: created DataFrame
+    """
+    logging.info('Create Total Network Info DataFrame row')
+
+    sent_bytes = get_network_total_sent_bytes(rec)
+    received_bytes = get_network_total_received_bytes(rec)
+
+    info_df = pd.DataFrame(list(zip([sent_bytes], [received_bytes])))
+
+    return info_df
+
+
+
 def handle_script2_record(timestamp, rec):
     res_dict = {}
 
@@ -242,8 +286,9 @@ def handle_script2_record(timestamp, rec):
     machine_info_df = get_static_machine_info_row(rec)
     disk_io_info_df = get_disk_io_info_row(rec)
     virtual_mem_info_df = get_virtual_mem_info_row(rec)
+    total_net_info = get_network_total_info_row(rec)
 
-    pp(virtual_mem_info_df)
+    pp(total_net_info)
 
 
 def standardize_raw_Script2_file(full_filename: str, out_dir: str):
