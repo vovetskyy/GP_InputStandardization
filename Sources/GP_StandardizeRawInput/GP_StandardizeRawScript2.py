@@ -328,11 +328,7 @@ def get_cpu_total_load_info_row(rec):
     logging.info('Create Total CPU load Info DataFrame row')
     load_list = get_cpu_load_list(rec)
 
-    # pack all core loads to one tuple
-    zip_v = tuple(x for x in load_list)
-
-    # pack tuple to list to create just one DataFrame row
-    info_df = pd.DataFrame([zip_v])
+    info_df = pd.DataFrame([tuple(load_list)])
 
     return info_df
 
