@@ -245,7 +245,7 @@ def get_datetime_df_row(timestamp):
     start_time = dt.time().isoformat()
     start_datetime = rawu.get_date_time_str(start_date, start_time)
 
-    dt_df = pd.DataFrame(list(zip([start_datetime], [start_date], [start_time])))
+    dt_df = pd.DataFrame([(start_datetime, start_date, start_time)])
 
     return dt_df
 
@@ -263,7 +263,7 @@ def get_static_machine_info_row(rec: dict) -> pd.DataFrame:
     cpu_details = get_cpu_details(rec)
     num_cores = get_cpu_num_cores(rec)
 
-    info_df = pd.DataFrame(list(zip([pc_name], [cpu_type], [cpu_details], [num_cores])))
+    info_df = pd.DataFrame([(pc_name, cpu_type, cpu_details, num_cores)])
 
     return info_df
 
@@ -281,7 +281,7 @@ def get_disk_io_info_row(rec: dict) -> pd.DataFrame:
     read_ms = get_disk_io_read_total_ms(rec)
     written_ms = get_disk_io_written_total_ms(rec)
 
-    info_df = pd.DataFrame(list(zip([read_bytes], [written_bytes], [read_ms], [written_ms])))
+    info_df = pd.DataFrame([(read_bytes, written_bytes, read_ms, written_ms)])
 
     return info_df
 
@@ -298,7 +298,7 @@ def get_virtual_mem_info_row(rec: dict) -> pd.DataFrame:
     used_bytes = get_virtual_mem_used_bytes(rec)
     avail_bytes = get_virtual_mem_avail_bytes(rec)
 
-    info_df = pd.DataFrame(list(zip([total_bytes], [used_bytes], [avail_bytes])))
+    info_df = pd.DataFrame([(total_bytes, used_bytes, avail_bytes)])
 
     return info_df
 
@@ -314,7 +314,7 @@ def get_network_total_info_row(rec: dict) -> pd.DataFrame:
     sent_bytes = get_network_total_sent_bytes(rec)
     received_bytes = get_network_total_received_bytes(rec)
 
-    info_df = pd.DataFrame(list(zip([sent_bytes], [received_bytes])))
+    info_df = pd.DataFrame([(sent_bytes,received_bytes)])
 
     return info_df
 
