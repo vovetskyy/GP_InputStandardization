@@ -10,7 +10,41 @@ import GP_RawInputUtils as rawu
 
 # =======================================
 # ============= CONSTANTS ===============
+SCRIPT2_SYS_STATS_STR = 'SYS Stats'
+SCRIPT2_SYS_STATS_IDX = 0
 
+SCRIPT2_SYS_STATS_PC_NAME_STR = 'Node'
+SCRIPT2_SYS_STATS_CPU_TYPE_STR = 'Machine'
+SCRIPT2_SYS_STATS_CPU_DETAILS_STR = 'Processor'
+
+
+
+SCRIPT2_CPU_STATS_STR = 'CPU Stats'
+SCRIPT2_CPU_STATS_IDX = 1
+
+SCRIPT2_CPU_STATS_NUM_CORES_STR = 'CPU: Num of cores'
+
+
+SCRIPT2_IO_BYTES_STR = 'IO, read/write, bytes'
+SCRIPT2_IO_MS_STR = 'IO, read/write, milliseconds'
+
+SCRIPT2_IO_BYTES_READ_IDX = 0
+SCRIPT2_IO_BYTES_WRITTEN_IDX = 1
+SCRIPT2_IO_MS_READ_IDX = 0
+SCRIPT2_IO_MS_WRITTEN_IDX = 1
+
+
+SCRIPT2_MEM_BYTES_STR = 'MEM: total/used/available, bytes'
+
+SCRIPT2_MEM_BYTES_TOTAL_IDX = 0
+SCRIPT2_MEM_BYTES_USED_IDX = 1
+SCRIPT2_MEM_BYTES_AVAILABLE_IDX = 2
+
+
+SCRIPT2_NET_BYTES_STR = 'NET Total, sent/received, bytes'
+
+SCRIPT2_NET_BYTES_SENT_IDX = 0
+SCRIPT2_NET_BYTES_RECEIVED_IDX = 1
 
 # ---------------------------------------
 
@@ -21,7 +55,7 @@ def get_sys_stats_dict(rec: dict) -> dict:
     :param rec: one Script2 json record
     :return: extracted information dictionary
     """
-    return rec[0]['SYS Stats']
+    return rec[SCRIPT2_SYS_STATS_IDX][SCRIPT2_SYS_STATS_STR]
 
 
 def get_cpu_stats_dict(rec: dict) -> dict:
@@ -30,7 +64,7 @@ def get_cpu_stats_dict(rec: dict) -> dict:
     :param rec: one Script2 json record
     :return: extracted information dictionary
     """
-    return rec[1]['CPU Stats']
+    return rec[SCRIPT2_CPU_STATS_IDX][SCRIPT2_CPU_STATS_STR]
 
 
 def get_disk_io_bytes_stats_list(rec: dict) -> list:
@@ -39,7 +73,7 @@ def get_disk_io_bytes_stats_list(rec: dict) -> list:
     :param rec: one Script2 json record
     :return: extracted information list
     """
-    return get_cpu_stats_dict(rec)['IO, read/write, bytes']
+    return get_cpu_stats_dict(rec)[SCRIPT2_IO_BYTES_STR]
 
 
 def get_disk_io_ms_stats_list(rec: dict) -> list:
@@ -48,7 +82,7 @@ def get_disk_io_ms_stats_list(rec: dict) -> list:
     :param rec: one Script2 json record
     :return: extracted information list
     """
-    return get_cpu_stats_dict(rec)['IO, read/write, milliseconds']
+    return get_cpu_stats_dict(rec)[SCRIPT2_IO_MS_STR]
 
 
 def get_virtual_mem_bytes_stats_list(rec: dict) -> list:
@@ -57,7 +91,7 @@ def get_virtual_mem_bytes_stats_list(rec: dict) -> list:
     :param rec: one Script2 json record
     :return: extracted information list
     """
-    return get_cpu_stats_dict(rec)['MEM: total/used/available, bytes']
+    return get_cpu_stats_dict(rec)[SCRIPT2_MEM_BYTES_STR]
 
 
 def get_total_network_bytes_stats_list(rec: dict) -> list:
@@ -66,7 +100,7 @@ def get_total_network_bytes_stats_list(rec: dict) -> list:
     :param rec: one Script2 json record
     :return: extracted information list
     """
-    return get_cpu_stats_dict(rec)['NET Total, sent/received, bytes']
+    return get_cpu_stats_dict(rec)[SCRIPT2_NET_BYTES_STR]
 
 
 def get_pc_name(rec: dict):
@@ -75,7 +109,7 @@ def get_pc_name(rec: dict):
     :param rec: one Script2 json record
     :return: extracted information
     """
-    return get_sys_stats_dict(rec)['Node']
+    return get_sys_stats_dict(rec)[SCRIPT2_SYS_STATS_PC_NAME_STR]
 
 
 def get_cpu_type(rec: dict):
@@ -84,7 +118,7 @@ def get_cpu_type(rec: dict):
     :param rec: one Script2 json record
     :return: extracted information
     """
-    return get_sys_stats_dict(rec)['Machine']
+    return get_sys_stats_dict(rec)[SCRIPT2_SYS_STATS_CPU_TYPE_STR]
 
 
 def get_cpu_details(rec: dict):
@@ -93,7 +127,7 @@ def get_cpu_details(rec: dict):
     :param rec: one Script2 json record
     :return: extracted information
     """
-    return get_sys_stats_dict(rec)['Processor']
+    return get_sys_stats_dict(rec)[SCRIPT2_SYS_STATS_CPU_DETAILS_STR]
 
 
 def get_cpu_num_cores(rec: dict):
@@ -102,7 +136,7 @@ def get_cpu_num_cores(rec: dict):
     :param rec: one Script2 json record
     :return: extracted information
     """
-    return get_cpu_stats_dict(rec)['CPU: Num of cores']
+    return get_cpu_stats_dict(rec)[SCRIPT2_CPU_STATS_NUM_CORES_STR]
 
 
 def get_disk_io_read_total_bytes(rec: dict):
@@ -111,7 +145,7 @@ def get_disk_io_read_total_bytes(rec: dict):
     :param rec: one Script2 json record
     :return: extracted information
     """
-    return get_disk_io_bytes_stats_list(rec)[0]
+    return get_disk_io_bytes_stats_list(rec)[SCRIPT2_IO_BYTES_READ_IDX]
 
 
 def get_disk_io_written_total_bytes(rec: dict):
@@ -120,7 +154,7 @@ def get_disk_io_written_total_bytes(rec: dict):
     :param rec: one Script2 json record
     :return: extracted information
     """
-    return get_disk_io_bytes_stats_list(rec)[1]
+    return get_disk_io_bytes_stats_list(rec)[SCRIPT2_IO_BYTES_WRITTEN_IDX]
 
 
 def get_disk_io_read_total_ms(rec: dict):
@@ -129,7 +163,7 @@ def get_disk_io_read_total_ms(rec: dict):
     :param rec: one Script2 json record
     :return: extracted information
     """
-    return get_disk_io_ms_stats_list(rec)[0]
+    return get_disk_io_ms_stats_list(rec)[SCRIPT2_IO_MS_READ_IDX]
 
 
 def get_disk_io_written_total_ms(rec: dict):
@@ -138,7 +172,7 @@ def get_disk_io_written_total_ms(rec: dict):
     :param rec: one Script2 json record
     :return: extracted information
     """
-    return get_disk_io_ms_stats_list(rec)[1]
+    return get_disk_io_ms_stats_list(rec)[SCRIPT2_IO_MS_WRITTEN_IDX]
 
 
 def get_virtual_mem_total_bytes(rec: dict):
@@ -147,7 +181,7 @@ def get_virtual_mem_total_bytes(rec: dict):
     :param rec: one Script2 json record
     :return: extracted information
     """
-    return get_virtual_mem_bytes_stats_list(rec)[0]
+    return get_virtual_mem_bytes_stats_list(rec)[SCRIPT2_MEM_BYTES_TOTAL_IDX]
 
 
 def get_virtual_mem_used_bytes(rec: dict):
@@ -156,7 +190,7 @@ def get_virtual_mem_used_bytes(rec: dict):
     :param rec: one Script2 json record
     :return: extracted information
     """
-    return get_virtual_mem_bytes_stats_list(rec)[1]
+    return get_virtual_mem_bytes_stats_list(rec)[SCRIPT2_MEM_BYTES_USED_IDX]
 
 
 def get_virtual_mem_avail_bytes(rec: dict):
@@ -165,7 +199,7 @@ def get_virtual_mem_avail_bytes(rec: dict):
     :param rec: one Script2 json record
     :return: extracted information
     """
-    return get_virtual_mem_bytes_stats_list(rec)[2]
+    return get_virtual_mem_bytes_stats_list(rec)[SCRIPT2_MEM_BYTES_AVAILABLE_IDX]
 
 
 def get_network_total_sent_bytes(rec: dict):
@@ -174,7 +208,7 @@ def get_network_total_sent_bytes(rec: dict):
     :param rec: one Script2 json record
     :return: extracted information
     """
-    return get_total_network_bytes_stats_list(rec)[0]
+    return get_total_network_bytes_stats_list(rec)[SCRIPT2_NET_BYTES_SENT_IDX]
 
 
 def get_network_total_received_bytes(rec: dict):
@@ -183,7 +217,7 @@ def get_network_total_received_bytes(rec: dict):
     :param rec: one Script2 json record
     :return: extracted information
     """
-    return get_total_network_bytes_stats_list(rec)[1]
+    return get_total_network_bytes_stats_list(rec)[SCRIPT2_NET_BYTES_RECEIVED_IDX]
 
 
 def get_datetime_df_row(timestamp):
@@ -276,6 +310,9 @@ def get_network_total_info_row(rec: dict) -> pd.DataFrame:
     return info_df
 
 
+def get_cpu_load_info_row(rec):
+    pass
+
 
 def handle_script2_record(timestamp, rec):
     res_dict = {}
@@ -286,9 +323,9 @@ def handle_script2_record(timestamp, rec):
     machine_info_df = get_static_machine_info_row(rec)
     disk_io_info_df = get_disk_io_info_row(rec)
     virtual_mem_info_df = get_virtual_mem_info_row(rec)
-    total_net_info = get_network_total_info_row(rec)
+    total_net_info_df = get_network_total_info_row(rec)
 
-    pp(total_net_info)
+    pp(total_net_info_df)
 
 
 def standardize_raw_Script2_file(full_filename: str, out_dir: str):
