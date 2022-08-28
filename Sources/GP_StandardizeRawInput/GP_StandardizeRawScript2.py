@@ -16,7 +16,7 @@ SCRIPT2_SYS_STATS_IDX = 0
 SCRIPT2_SYS_STATS_PC_NAME_STR = 'Node'
 SCRIPT2_SYS_STATS_CPU_TYPE_STR = 'Machine'
 SCRIPT2_SYS_STATS_CPU_DETAILS_STR = 'Processor'
-
+SCRIPT2_SYS_STATS_CPU_LOAD_STR = r'CPU: Load, %, per core'
 
 
 SCRIPT2_CPU_STATS_STR = 'CPU Stats'
@@ -139,6 +139,15 @@ def get_cpu_num_cores(rec: dict):
     return get_cpu_stats_dict(rec)[SCRIPT2_CPU_STATS_NUM_CORES_STR]
 
 
+def get_cpu_load_list(rec: dict):
+    """
+    extracts cpu load percentage per core from Script2 json dictionary
+    :param rec: one Script2 json record
+    :return: extracted information
+    """
+    return get_cpu_stats_dict(rec)[SCRIPT2_SYS_STATS_CPU_LOAD_STR]
+
+
 def get_disk_io_read_total_bytes(rec: dict):
     """
     extracts cumulative read bytes Disk IO  from Script2 json dictionary
@@ -243,7 +252,7 @@ def get_datetime_df_row(timestamp):
 
 def get_static_machine_info_row(rec: dict) -> pd.DataFrame:
     """
-    creates DataFrame raw with standardized static system info
+    creates DataFrame row with standardized static system info
     :param rec: one Script2 json record
     :return: created DataFrame
     """
@@ -261,7 +270,7 @@ def get_static_machine_info_row(rec: dict) -> pd.DataFrame:
 
 def get_disk_io_info_row(rec: dict) -> pd.DataFrame:
     """
-    creates DataFrame raw with standardized info about Disk IO
+    creates DataFrame row with standardized info about Disk IO
     :param rec: one Script2 json record
     :return: created DataFrame
     """
@@ -279,7 +288,7 @@ def get_disk_io_info_row(rec: dict) -> pd.DataFrame:
 
 def get_virtual_mem_info_row(rec: dict) -> pd.DataFrame:
     """
-    creates DataFrame raw with standardized info about Disk IO
+    creates DataFrame row with standardized info about Disk IO
     :param rec: one Script2 json record
     :return: created DataFrame
     """
@@ -296,7 +305,7 @@ def get_virtual_mem_info_row(rec: dict) -> pd.DataFrame:
 
 def get_network_total_info_row(rec: dict) -> pd.DataFrame:
     """
-    creates DataFrame raw with standardized info about Disk IO
+    creates DataFrame row with standardized info about Disk IO
     :param rec: one Script2 json record
     :return: created DataFrame
     """
@@ -310,8 +319,22 @@ def get_network_total_info_row(rec: dict) -> pd.DataFrame:
     return info_df
 
 
-def get_cpu_load_info_row(rec):
-    pass
+def get_cpu_total_load_info_row(rec):
+    """
+    creates DataFrame row with standardized info about CPU core loads
+    :param rec: one Script2 json record
+    :return: created DataFrame
+    """
+    logging.info('Create Total CPU load Info DataFrame row')
+    load_list = get_cpu_load_list(rec)
+
+    # pack all core loads to one tuple
+    zip_v = tuple(x for x in load_list)
+
+    # pack tuple to list to create just one DataFrame row
+    info_df = pd.DataFrame([zip_v])
+
+    return info_df
 
 
 def handle_script2_record(timestamp, rec):
@@ -324,8 +347,9 @@ def handle_script2_record(timestamp, rec):
     disk_io_info_df = get_disk_io_info_row(rec)
     virtual_mem_info_df = get_virtual_mem_info_row(rec)
     total_net_info_df = get_network_total_info_row(rec)
+    total_cpu_load_df = get_cpu_total_load_info_row(rec)
 
-    pp(total_net_info_df)
+    pp(total_cpu_load_df)
 
 
 def standardize_raw_Script2_file(full_filename: str, out_dir: str):
@@ -364,6 +388,7 @@ def standardize_raw_Script2_in_dir(parsing_dir: str, out_dir: str):
 
     for file in file_list:
         # standardize_raw_Script2_file(str(file), out_dir)
-        pp(str(file))
+        # pp(str(file))
+        continue
 
     standardize_raw_Script2_file(str(file_list[0]), out_dir)
