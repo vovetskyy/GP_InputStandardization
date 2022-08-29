@@ -10,6 +10,9 @@ import GP_RawInputUtils as rawu
 
 # =======================================
 # ============= CONSTANTS ===============
+
+# ---------------------------------------
+# - Original Script2 structure constants -
 SCRIPT2_SYS_STATS_STR = 'SYS Stats'
 SCRIPT2_SYS_STATS_IDX = 0
 
@@ -47,6 +50,11 @@ SCRIPT2_NET_BYTES_SENT_IDX = 0
 SCRIPT2_NET_BYTES_RECEIVED_IDX = 1
 
 # ---------------------------------------
+
+# ---------------------------------------
+# ------------ Table columns ------------
+
+# =======================================
 
 
 def get_sys_stats_dict(rec: dict) -> dict:
@@ -245,7 +253,7 @@ def get_datetime_df_row(timestamp):
     start_time = dt.time().isoformat()
     start_datetime = rawu.get_date_time_str(start_date, start_time)
 
-    dt_df = pd.DataFrame([(start_datetime, start_date, start_time)])
+    dt_df = pd.DataFrame([(start_datetime, start_date, start_time)], columns=rawu.TIMESTAMPS_COLUMN_NAMES_RM)
 
     return dt_df
 
@@ -263,7 +271,9 @@ def get_static_machine_info_row(rec: dict) -> pd.DataFrame:
     cpu_details = get_cpu_details(rec)
     num_cores = get_cpu_num_cores(rec)
 
-    info_df = pd.DataFrame([(pc_name, cpu_type, cpu_details, num_cores)])
+    info_df = pd.DataFrame([(pc_name, cpu_type, cpu_details, num_cores)],
+                           columns=[rawu.RAW_PC_NAME_COLUMN_NAME, rawu.CPU_TYPE_COLUMN_NAME,
+                                    rawu.CPU_DETAILS_COLUMN_NAME, rawu.CPU_NUM_CORES_COLUMN_NAME])
 
     return info_df
 
@@ -314,7 +324,7 @@ def get_network_total_info_row(rec: dict) -> pd.DataFrame:
     sent_bytes = get_network_total_sent_bytes(rec)
     received_bytes = get_network_total_received_bytes(rec)
 
-    info_df = pd.DataFrame([(sent_bytes,received_bytes)])
+    info_df = pd.DataFrame([(sent_bytes, received_bytes)])
 
     return info_df
 
@@ -345,7 +355,7 @@ def handle_script2_record(timestamp, rec):
     total_net_info_df = get_network_total_info_row(rec)
     total_cpu_load_df = get_cpu_total_load_info_row(rec)
 
-    pp(total_cpu_load_df)
+    pp(machine_info_df)
 
 
 def standardize_raw_Script2_file(full_filename: str, out_dir: str):
