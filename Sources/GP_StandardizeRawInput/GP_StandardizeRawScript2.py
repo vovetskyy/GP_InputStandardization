@@ -291,7 +291,11 @@ def get_disk_io_info_row(rec: dict) -> pd.DataFrame:
     read_ms = get_disk_io_read_total_ms(rec)
     written_ms = get_disk_io_written_total_ms(rec)
 
-    info_df = pd.DataFrame([(read_bytes, written_bytes, read_ms, written_ms)])
+    info_df = pd.DataFrame([(read_bytes, written_bytes, read_ms, written_ms)],
+                           columns=[rawu.DISK_IO_BYTES_READ_TOTAL_COLUMN_NAME,
+                                    rawu.DISK_IO_BYTES_WRITTEN_TOTAL_COLUMN_NAME,
+                                    rawu.DISK_IO_MS_READ_TOTAL_COLUMN_NAME,
+                                    rawu.DISK_IO_MS_WRITTEN_TOTAL_COLUMN_NAME])
 
     return info_df
 
@@ -308,7 +312,10 @@ def get_virtual_mem_info_row(rec: dict) -> pd.DataFrame:
     used_bytes = get_virtual_mem_used_bytes(rec)
     avail_bytes = get_virtual_mem_avail_bytes(rec)
 
-    info_df = pd.DataFrame([(total_bytes, used_bytes, avail_bytes)])
+    info_df = pd.DataFrame([(total_bytes, used_bytes, avail_bytes)],
+                           columns=[rawu.VIRTUAL_MEM_BYTES_TOTAL_COLUMN_NAME,
+                                    rawu.VIRTUAL_MEM_BYTES_USED_COLUMN_NAME,
+                                    rawu.VIRTUAL_MEM_BYTES_AVAILABLE_COLUMN_NAME])
 
     return info_df
 
@@ -324,7 +331,9 @@ def get_network_total_info_row(rec: dict) -> pd.DataFrame:
     sent_bytes = get_network_total_sent_bytes(rec)
     received_bytes = get_network_total_received_bytes(rec)
 
-    info_df = pd.DataFrame([(sent_bytes, received_bytes)])
+    info_df = pd.DataFrame([(sent_bytes, received_bytes)],
+                           columns=[rawu.NETWORK_BYTES_SENT_TOTAL_COLUMN_NAME,
+                                    rawu.NETWORK_BYTES_RECEIVED_TOTAL_COLUMN_NAME])
 
     return info_df
 
@@ -355,7 +364,7 @@ def handle_script2_record(timestamp, rec):
     total_net_info_df = get_network_total_info_row(rec)
     total_cpu_load_df = get_cpu_total_load_info_row(rec)
 
-    pp(machine_info_df)
+    pp(total_net_info_df)
 
 
 def standardize_raw_Script2_file(full_filename: str, out_dir: str):
