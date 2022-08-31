@@ -32,8 +32,8 @@ RAW_START_COLUMN_NAME_PREFIX = 'Start'
 RAW_END_COLUMN_NAME_PREFIX = 'End'
 CPU_LOAD_COLUMN_NAME_PREFIX = 'CPU_Load'
 
-PERSENTAGE_COLUMN_NAME_SUFFIX = '_Percents'
-
+PERCENTAGE_COLUMN_NAME_SUFFIX = 'Percents'
+CORE_COLUMN_NAME_SUFFIX = 'Core'
 
 RAW_DATETIME_COLUMN_NAME = 'Raw_DateTime'
 RAW_DATE_COLUMN_NAME = 'Raw_Date'
@@ -56,7 +56,6 @@ VIRTUAL_MEM_BYTES_AVAILABLE_COLUMN_NAME = 'VirtualMemory_Available_Bytes'
 NETWORK_BYTES_SENT_TOTAL_COLUMN_NAME = 'Network_Sent_Total_Bytes'
 NETWORK_BYTES_RECEIVED_TOTAL_COLUMN_NAME = 'Network_Received_Total_Bytes'
 
-
 RAW_START_DATETIME_COLUMN_NAME = RAW_START_COLUMN_NAME_PREFIX + COLUMN_NAME_DELIM + RAW_DATETIME_COLUMN_NAME
 RAW_START_DATE_COLUMN_NAME = RAW_START_COLUMN_NAME_PREFIX + COLUMN_NAME_DELIM + RAW_DATE_COLUMN_NAME
 RAW_START_TIME_COLUMN_NAME = RAW_START_COLUMN_NAME_PREFIX + COLUMN_NAME_DELIM + RAW_TIME_COLUMN_NAME
@@ -64,7 +63,6 @@ RAW_START_TIME_COLUMN_NAME = RAW_START_COLUMN_NAME_PREFIX + COLUMN_NAME_DELIM + 
 RAW_END_DATETIME_COLUMN_NAME = RAW_END_COLUMN_NAME_PREFIX + COLUMN_NAME_DELIM + RAW_DATETIME_COLUMN_NAME
 RAW_END_DATE_COLUMN_NAME = RAW_END_COLUMN_NAME_PREFIX + COLUMN_NAME_DELIM + RAW_DATE_COLUMN_NAME
 RAW_END_TIME_COLUMN_NAME = RAW_END_COLUMN_NAME_PREFIX + COLUMN_NAME_DELIM + RAW_TIME_COLUMN_NAME
-
 
 TIMESTAMPS_COLUMN_NAMES_RM = [RAW_START_DATETIME_COLUMN_NAME, RAW_START_DATE_COLUMN_NAME, RAW_START_TIME_COLUMN_NAME]
 
@@ -101,8 +99,12 @@ class CumMeasTimestamps:
     enddate: str = ''
     endtime: str = ''
 
+
 # =======================================
 
+
+# =======================================
+# ======== Handling of filenames ========
 
 def get_filename_parts(full_filename: str):
     """
@@ -149,6 +151,54 @@ def get_filename_parts(full_filename: str):
     logging.debug('"' + full_filename + '": final parsing result:\n' + str(filename_parts))
 
     return filename_parts
+
+
+def get_std_raw_filename(PC_name, startdate, starttime, enddate, endtime, suffix, extension):
+    """
+    Creates standardized raw input filename from passed parts
+    :param PC_name:
+    :param startdate:
+    :param starttime:
+    :param enddate:
+    :param endtime:
+    :param suffix:
+    :param extension:
+    :return: constructed filename
+    """
+    filename = str(PC_name) + RAW_FILENAME_DELIM \
+               + str(startdate) + RAW_FILENAME_DELIM \
+               + str(starttime) + RAW_FILENAME_DELIM \
+               + str(enddate) + RAW_FILENAME_DELIM \
+               + str(endtime) + RAW_FILENAME_DELIM \
+               + suffix + '.' + extension
+
+    return filename
+
+
+# =======================================
+
+def get_date_time_str(date, time):
+    return date + GP_DELIM_BETWEEN_DATE_AND_TIME + time
+
+
+def get_cpu_load_per_core_column_name(core) -> str:
+    return CPU_LOAD_COLUMN_NAME_PREFIX + COLUMN_NAME_DELIM + PERCENTAGE_COLUMN_NAME_SUFFIX + COLUMN_NAME_DELIM \
+           + CORE_COLUMN_NAME_SUFFIX + COLUMN_NAME_DELIM + str(core)
+
+
+def convert_df_time_to_str(df_time_str):
+    """
+    coverts time in pandas.Dataframe format to string, which will be used in filenames
+    :param df_time_str:
+    :return: converted string
+    """
+    time_str = str(df_time_str)
+    # get HH MM SS from HH:MM:SS:MSEC string
+    time_list = time_str.split(PANDAS_TIME_DELIM)[:3]
+
+    time_str = str(RAW_FILENAME_TIME_DELIM).join(time_list)
+
+    return time_str
 
 
 def get_aligned_datetime_serie(orig_df, filename_parts):
@@ -224,10 +274,6 @@ def create_empty_cumulative_times_df():
     return empty_df
 
 
-def get_date_time_str(date, time):
-    return date + GP_DELIM_BETWEEN_DATE_AND_TIME + time
-
-
 def get_cumulative_times_df(timestamps):
     """
     creates Dataframe with begin/end timestamps
@@ -246,40 +292,3 @@ def get_cumulative_times_df(timestamps):
     times_df.loc[0] = [start_datetime, start_date, start_time, end_datetime, end_date, end_time]
 
     return times_df
-
-
-def convert_df_time_to_str(df_time_str):
-    """
-    coverts time in pandas.Dataframe format to string, which will be used in filenames
-    :param df_time_str:
-    :return: converted string
-    """
-    time_str = str(df_time_str)
-    # get HH MM SS from HH:MM:SS:MSEC string
-    time_list = time_str.split(PANDAS_TIME_DELIM)[:3]
-
-    time_str = str(RAW_FILENAME_TIME_DELIM).join(time_list)
-
-    return time_str
-
-
-def get_std_raw_filename(PC_name, startdate, starttime, enddate, endtime, suffix, extension):
-    """
-    Creates standardized raw input filename from passed parts
-    :param PC_name:
-    :param startdate:
-    :param starttime:
-    :param enddate:
-    :param endtime:
-    :param suffix:
-    :param extension:
-    :return: constructed filename
-    """
-    filename = str(PC_name) + RAW_FILENAME_DELIM \
-               + str(startdate) + RAW_FILENAME_DELIM \
-               + str(starttime) + RAW_FILENAME_DELIM \
-               + str(enddate) + RAW_FILENAME_DELIM \
-               + str(endtime) + RAW_FILENAME_DELIM \
-               + suffix + '.' + extension
-
-    return filename

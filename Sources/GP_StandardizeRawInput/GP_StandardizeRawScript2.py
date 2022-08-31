@@ -346,8 +346,9 @@ def get_cpu_total_load_info_row(rec):
     """
     logging.info('Create Total CPU load Info DataFrame row')
     load_list = get_cpu_load_list(rec)
+    columns_names = [rawu.get_cpu_load_per_core_column_name(x) for x in range(len(load_list))]
 
-    info_df = pd.DataFrame([tuple(load_list)])
+    info_df = pd.DataFrame([tuple(load_list)], columns=columns_names)
 
     return info_df
 
@@ -364,7 +365,7 @@ def handle_script2_record(timestamp, rec):
     total_net_info_df = get_network_total_info_row(rec)
     total_cpu_load_df = get_cpu_total_load_info_row(rec)
 
-    pp(total_net_info_df)
+    pp(total_cpu_load_df)
 
 
 def standardize_raw_Script2_file(full_filename: str, out_dir: str):
