@@ -7,7 +7,6 @@ from pprint import pprint as pp
 
 import GP_RawInputUtils as rawu
 
-
 # =======================================
 # ============= CONSTANTS ===============
 
@@ -21,12 +20,10 @@ SCRIPT2_SYS_STATS_CPU_TYPE_STR = 'Machine'
 SCRIPT2_SYS_STATS_CPU_DETAILS_STR = 'Processor'
 SCRIPT2_SYS_STATS_CPU_LOAD_STR = r'CPU: Load, %, per core'
 
-
 SCRIPT2_CPU_STATS_STR = 'CPU Stats'
 SCRIPT2_CPU_STATS_IDX = 1
 
 SCRIPT2_CPU_STATS_NUM_CORES_STR = 'CPU: Num of cores'
-
 
 SCRIPT2_IO_BYTES_STR = 'IO, read/write, bytes'
 SCRIPT2_IO_MS_STR = 'IO, read/write, milliseconds'
@@ -36,18 +33,17 @@ SCRIPT2_IO_BYTES_WRITTEN_IDX = 1
 SCRIPT2_IO_MS_READ_IDX = 0
 SCRIPT2_IO_MS_WRITTEN_IDX = 1
 
-
 SCRIPT2_MEM_BYTES_STR = 'MEM: total/used/available, bytes'
 
 SCRIPT2_MEM_BYTES_TOTAL_IDX = 0
 SCRIPT2_MEM_BYTES_USED_IDX = 1
 SCRIPT2_MEM_BYTES_AVAILABLE_IDX = 2
 
-
 SCRIPT2_NET_BYTES_STR = 'NET Total, sent/received, bytes'
 
 SCRIPT2_NET_BYTES_SENT_IDX = 0
 SCRIPT2_NET_BYTES_RECEIVED_IDX = 1
+
 
 # ---------------------------------------
 
@@ -353,9 +349,7 @@ def get_cpu_total_load_info_row(rec):
     return info_df
 
 
-def handle_script2_record(timestamp, rec):
-    res_dict = {}
-
+def parse_script2_record(timestamp, rec):
     logging.info('Start handling of timestamp ' + timestamp)
 
     dt_df = get_datetime_df_row(timestamp)
@@ -365,7 +359,11 @@ def handle_script2_record(timestamp, rec):
     total_net_info_df = get_network_total_info_row(rec)
     total_cpu_load_df = get_cpu_total_load_info_row(rec)
 
-    pp(total_cpu_load_df)
+    sys_rec = pd.concat([dt_df, machine_info_df, disk_io_info_df, virtual_mem_info_df,
+                         total_net_info_df, total_cpu_load_df],
+                        axis=1)
+
+    return sys_rec
 
 
 def standardize_raw_Script2_file(full_filename: str, out_dir: str):
@@ -385,9 +383,14 @@ def standardize_raw_Script2_file(full_filename: str, out_dir: str):
     # as dict keys are not mandatory sorted, get timestamps sorted by time
     times_list = list(json_dict.keys())
     times_list.sort()
-    # test_item = json_dict[times_list[0]]
 
-    handle_script2_record(times_list[0], json_dict[times_list[0]])
+    # create final DataFrames with the overall system info and process-specific info
+    sys_list = []
+    for i in range(len(times_list)):
+        sys_rec = parse_script2_record(times_list[i], json_dict[times_list[i]])
+        sys_list.append(sys_rec)
+    sys_df = pd.concat(sys_list)
+    pp(sys_df)
 
 
 def standardize_raw_Script2_in_dir(parsing_dir: str, out_dir: str):
