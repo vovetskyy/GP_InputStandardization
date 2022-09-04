@@ -334,7 +334,7 @@ def get_network_total_info_row(rec: dict) -> pd.DataFrame:
     return info_df
 
 
-def get_cpu_total_load_info_row(rec):
+def get_cpu_cores_load_info_row(rec):
     """
     creates DataFrame row with standardized info about CPU core loads
     :param rec: one Script2 json record
@@ -354,9 +354,17 @@ def get_sys_overall_row():
     creates DataFrame row with standardized info overall system "process"
     :return: created dataframe
     """
+    logging.info('Create Overall system as "Process" DataFrame row')
     info_df = pd.DataFrame([rawu.OVERALL_SYSTEM_PROCESS_NAME], columns=[rawu.OVERALL_SYSTEM_COLUMN_NAME])
 
     return info_df
+
+
+def get_avg_cpu_load_row(cores_load):
+    mean_df = cores_load.mean(axis=1)
+    sys_load = pd.DataFrame(mean_df, columns=[rawu.OVERAL_CPU_LOAD_COLUMN_NAME])
+
+    return sys_load
 
 
 def parse_script2_record(timestamp, rec):
@@ -367,14 +375,19 @@ def parse_script2_record(timestamp, rec):
     disk_io_info_df = get_disk_io_info_row(rec)
     virtual_mem_info_df = get_virtual_mem_info_row(rec)
     total_net_info_df = get_network_total_info_row(rec)
-    total_cpu_load_df = get_cpu_total_load_info_row(rec)
+    cpu_load_per_core_df = get_cpu_cores_load_info_row(rec)
+    avg_cpu_load_df = get_avg_cpu_load_row(cpu_load_per_core_df)
     overal_sys_process_df = get_sys_overall_row()
 
     sys_rec = pd.concat([dt_df, machine_info_df, disk_io_info_df, virtual_mem_info_df,
-                         total_net_info_df, overal_sys_process_df, total_cpu_load_df],
+                         total_net_info_df, overal_sys_process_df, cpu_load_per_core_df, avg_cpu_load_df],
                         axis=1)
 
     return sys_rec
+
+
+def store_standardized_Script2_to_csv(df: pd.DataFrame, out_dir: str):
+    pass
 
 
 def standardize_raw_Script2_file(full_filename: str, out_dir: str):
@@ -401,8 +414,7 @@ def standardize_raw_Script2_file(full_filename: str, out_dir: str):
         sys_rec = parse_script2_record(times_list[i], json_dict[times_list[i]])
         sys_list.append(sys_rec)
     sys_df = pd.concat(sys_list)
-
-    return sys_df
+    store_standardized_Script2_to_csv(sys_df, out_dir)
 
 
 def standardize_raw_Script2_in_dir(parsing_dir: str, out_dir: str):
@@ -422,4 +434,4 @@ def standardize_raw_Script2_in_dir(parsing_dir: str, out_dir: str):
         # pp(str(file))
         continue
 
-    sys_df = standardize_raw_Script2_file(str(file_list[0]), out_dir)
+    standardize_raw_Script2_file(str(file_list[0]), out_dir)
