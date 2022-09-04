@@ -246,7 +246,10 @@ def get_datetime_df_row(timestamp):
     dt = datetime.strptime(timestamp, '%Y_%m_%d_%H_%M_%S_%f_')
 
     start_date = dt.date().isoformat()
-    start_time = dt.time().isoformat()
+    time_format_str = '%H' + rawu.PANDAS_TIME_DELIM + '%M' \
+                      + rawu.PANDAS_TIME_DELIM + '%S' \
+                      + rawu.PANDAS_TIME_DELIM + '%f'
+    start_time = dt.time().strftime(time_format_str)
     start_datetime = rawu.get_date_time_str(start_date, start_time)
 
     dt_df = pd.DataFrame([(start_datetime, start_date, start_time)], columns=rawu.TIMESTAMPS_COLUMN_NAMES_RM)
@@ -386,8 +389,46 @@ def parse_script2_record(timestamp, rec):
     return sys_rec
 
 
-def store_standardized_Script2_to_csv(df: pd.DataFrame, out_dir: str):
-    pass
+def get_standardized_process_out_filename(df: pd.DataFrame):
+    """
+    creates standardized CSV-filename to store process info from Script2 raw file
+    :param df:
+    :return: created filename
+    """
+    start_date_str = str(df.iloc[0][rawu.RAW_START_DATE_COLUMN_NAME])
+    # end_date_str = str(meas_timestamps.enddate)
+    start_time_str = rawu.convert_df_time_to_str(df.iloc[0][rawu.RAW_START_TIME_COLUMN_NAME])
+    # end_time_str = rawu.convert_df_time_to_str(meas_timestamps.endtime)
+
+    pp(df[[rawu.RAW_START_TIME_COLUMN_NAME]])
+    pp(start_date_str)
+    pp(df.iloc[0][rawu.RAW_START_TIME_COLUMN_NAME])
+    pp(start_time_str)
+
+    # store standardized real-time measurements to file
+    """
+    csv_name = rawu.get_std_raw_filename(filename_parts.PC_name,
+                                                   start_date_str, start_time_str,
+                                                   end_date_str, end_time_str,
+                                                   rawu.RAW_IPG_CUMMEAS_FILENAME_SUFFIX,
+                                                   'csv')
+    """
+
+    return 'TT'
+
+
+def store_standardized_Script2_to_outfile(df: pd.DataFrame, out_dir: str):
+    """
+    stores Dataframe to out dir
+    :param df:
+    :param out_dir:
+    :return: None
+    """
+    out_name = get_standardized_process_out_filename(df)
+
+    out_fullname = str(Path(out_dir) / out_name)
+
+    logging.info('Store file to ' + out_fullname)
 
 
 def standardize_raw_Script2_file(full_filename: str, out_dir: str):
@@ -413,8 +454,10 @@ def standardize_raw_Script2_file(full_filename: str, out_dir: str):
     for i in range(len(times_list)):
         sys_rec = parse_script2_record(times_list[i], json_dict[times_list[i]])
         sys_list.append(sys_rec)
-    sys_df = pd.concat(sys_list)
-    store_standardized_Script2_to_csv(sys_df, out_dir)
+    sys_df = pd.concat(sys_list, ignore_index=True)
+
+    logging.info('Store overall system info')
+    store_standardized_Script2_to_outfile(sys_df, out_dir)
 
 
 def standardize_raw_Script2_in_dir(parsing_dir: str, out_dir: str):
