@@ -110,10 +110,11 @@ def get_total_network_bytes_stats_list(rec: dict) -> list:
 def get_pc_name(rec: dict):
     """
     extracts PC name information  from Script2 json dictionary
+    the name is capitalized to be compatible with other Windows PC based utilities
     :param rec: one Script2 json record
     :return: extracted information
     """
-    return get_sys_stats_dict(rec)[SCRIPT2_SYS_STATS_PC_NAME_STR]
+    return str(get_sys_stats_dict(rec)[SCRIPT2_SYS_STATS_PC_NAME_STR]).upper()
 
 
 def get_cpu_type(rec: dict):
@@ -358,7 +359,7 @@ def get_sys_overall_row():
     :return: created dataframe
     """
     logging.info('Create Overall system as "Process" DataFrame row')
-    info_df = pd.DataFrame([rawu.OVERALL_SYSTEM_PROCESS_NAME], columns=[rawu.OVERALL_SYSTEM_COLUMN_NAME])
+    info_df = pd.DataFrame([rawu.OVERALL_SYSTEM_PROCESS_NAME], columns=[rawu.OVERALL_PROCESS_NAME_COLUMN_NAME])
 
     return info_df
 
@@ -389,32 +390,37 @@ def parse_script2_record(timestamp, rec):
     return sys_rec
 
 
+def get_process_name_as_filename_suffix(prc_name):
+    result_name = prc_name.upper()
+
+    result_name = result_name.replace('.', '_')
+
+    return result_name
+
+
 def get_standardized_process_out_filename(df: pd.DataFrame):
     """
     creates standardized CSV-filename to store process info from Script2 raw file
     :param df:
     :return: created filename
     """
+    pc_name = str(df.iloc[0][rawu.RAW_PC_NAME_COLUMN_NAME])
     start_date_str = str(df.iloc[0][rawu.RAW_START_DATE_COLUMN_NAME])
-    # end_date_str = str(meas_timestamps.enddate)
     start_time_str = rawu.convert_df_time_to_str(df.iloc[0][rawu.RAW_START_TIME_COLUMN_NAME])
-    # end_time_str = rawu.convert_df_time_to_str(meas_timestamps.endtime)
+    end_date_str = str(df.iloc[-1][rawu.RAW_START_DATE_COLUMN_NAME])
+    end_time_str = rawu.convert_df_time_to_str(df.iloc[-1][rawu.RAW_START_TIME_COLUMN_NAME])
 
-    pp(df[[rawu.RAW_START_TIME_COLUMN_NAME]])
-    pp(start_date_str)
-    pp(df.iloc[0][rawu.RAW_START_TIME_COLUMN_NAME])
-    pp(start_time_str)
+    process_name = str(df.iloc[0][rawu.OVERALL_PROCESS_NAME_COLUMN_NAME])
+    process_name = get_process_name_as_filename_suffix(process_name)
 
-    # store standardized real-time measurements to file
-    """
-    csv_name = rawu.get_std_raw_filename(filename_parts.PC_name,
-                                                   start_date_str, start_time_str,
-                                                   end_date_str, end_time_str,
-                                                   rawu.RAW_IPG_CUMMEAS_FILENAME_SUFFIX,
-                                                   'csv')
-    """
+    suffix_name = process_name + rawu.RAW_FILENAME_DELIM + rawu.RAW_SCRIPT2_REALMEAS_FILENAME_SUFFIX
 
-    return 'TT'
+    csv_name = rawu.get_std_raw_filename(pc_name,
+                                         start_date_str, start_time_str,
+                                         end_date_str, end_time_str,
+                                         suffix_name, 'csv')
+
+    return csv_name
 
 
 def store_standardized_Script2_to_outfile(df: pd.DataFrame, out_dir: str):
@@ -429,6 +435,7 @@ def store_standardized_Script2_to_outfile(df: pd.DataFrame, out_dir: str):
     out_fullname = str(Path(out_dir) / out_name)
 
     logging.info('Store file to ' + out_fullname)
+    df.to_csv(out_fullname, index=False)
 
 
 def standardize_raw_Script2_file(full_filename: str, out_dir: str):
