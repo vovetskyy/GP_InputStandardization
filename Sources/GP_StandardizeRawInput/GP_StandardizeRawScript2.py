@@ -480,8 +480,8 @@ def standardize_raw_Script2_in_dir(parsing_dir: str, out_dir: str):
     file_list = (list(parse_path.glob('*' + rawu.RAW_FILENAME_DELIM + rawu.RAW_SCRIPT2_FILENAME_SUFFIX + '.*')))
 
     for file in file_list:
-        # standardize_raw_Script2_file(str(file), out_dir)
+        standardize_raw_Script2_file(str(file), out_dir)
         # pp(str(file))
-        continue
+        # continue
 
-    standardize_raw_Script2_file(str(file_list[0]), out_dir)
+    # standardize_raw_Script2_file(str(file_list[0]), out_dir)
