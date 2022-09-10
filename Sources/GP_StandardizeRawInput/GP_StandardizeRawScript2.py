@@ -364,11 +364,23 @@ def get_sys_overall_row():
     return info_df
 
 
-def get_avg_cpu_load_row(cores_load):
+def get_avg_cpu_load_row(cores_load: pd.DataFrame):
+    """
+    calculates average CPU load from cores loades
+    :param cores_load:
+    :return:
+    """
     mean_df = cores_load.mean(axis=1)
     sys_load = pd.DataFrame(mean_df, columns=[rawu.OVERAL_CPU_LOAD_COLUMN_NAME])
 
+    pp(cores_load)
+    pp(sys_load)
+
     return sys_load
+
+
+def get_processes_info_from_timestamp():
+    pass
 
 
 def parse_script2_record(timestamp, rec):
@@ -381,10 +393,10 @@ def parse_script2_record(timestamp, rec):
     total_net_info_df = get_network_total_info_row(rec)
     cpu_load_per_core_df = get_cpu_cores_load_info_row(rec)
     avg_cpu_load_df = get_avg_cpu_load_row(cpu_load_per_core_df)
-    overal_sys_process_df = get_sys_overall_row()
+    overall_sys_process_df = get_sys_overall_row()
 
     sys_rec = pd.concat([dt_df, machine_info_df, disk_io_info_df, virtual_mem_info_df,
-                         total_net_info_df, overal_sys_process_df, cpu_load_per_core_df, avg_cpu_load_df],
+                         total_net_info_df, overall_sys_process_df, cpu_load_per_core_df, avg_cpu_load_df],
                         axis=1)
 
     return sys_rec
@@ -464,7 +476,7 @@ def standardize_raw_Script2_file(full_filename: str, out_dir: str):
     sys_df = pd.concat(sys_list, ignore_index=True)
 
     logging.info('Store overall system info')
-    store_standardized_Script2_to_outfile(sys_df, out_dir)
+    # store_standardized_Script2_to_outfile(sys_df, out_dir)
 
 
 def standardize_raw_Script2_in_dir(parsing_dir: str, out_dir: str):
