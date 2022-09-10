@@ -364,11 +364,11 @@ def get_sys_overall_row():
     return info_df
 
 
-def get_avg_cpu_load_row(cores_load: pd.DataFrame):
+def get_avg_cpu_load_row(cores_load: pd.DataFrame)->pd.DataFrame:
     """
     calculates average CPU load from cores loades
     :param cores_load:
-    :return:
+    :return: DataFrame row with calculated avg load
     """
     mean_df = cores_load.mean(axis=1)
     sys_load = pd.DataFrame(mean_df, columns=[rawu.OVERAL_CPU_LOAD_COLUMN_NAME])
@@ -381,6 +381,12 @@ def get_processes_info_from_timestamp():
 
 
 def parse_script2_record(timestamp, rec):
+    """
+    parses one timestamp record
+    :param timestamp:
+    :param rec:
+    :return: overall system DataFrame raw,
+    """
     logging.info('Start handling of timestamp ' + timestamp)
 
     dt_df = get_datetime_df_row(timestamp)
@@ -400,6 +406,11 @@ def parse_script2_record(timestamp, rec):
 
 
 def get_process_name_as_filename_suffix(prc_name):
+    """
+    converts PC name to format, applicable for filenames
+    :param prc_name:
+    :return: converted PC name
+    """
     result_name = prc_name.upper()
 
     result_name = result_name.replace('.', '_')
