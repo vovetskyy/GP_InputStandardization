@@ -373,9 +373,6 @@ def get_avg_cpu_load_row(cores_load: pd.DataFrame):
     mean_df = cores_load.mean(axis=1)
     sys_load = pd.DataFrame(mean_df, columns=[rawu.OVERAL_CPU_LOAD_COLUMN_NAME])
 
-    pp(cores_load)
-    pp(sys_load)
-
     return sys_load
 
 
@@ -476,7 +473,7 @@ def standardize_raw_Script2_file(full_filename: str, out_dir: str):
     sys_df = pd.concat(sys_list, ignore_index=True)
 
     logging.info('Store overall system info')
-    # store_standardized_Script2_to_outfile(sys_df, out_dir)
+    store_standardized_Script2_to_outfile(sys_df, out_dir)
 
 
 def standardize_raw_Script2_in_dir(parsing_dir: str, out_dir: str):
