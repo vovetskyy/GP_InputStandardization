@@ -25,6 +25,7 @@ SCRIPT2_CPU_STATS_IDX = 1
 
 SCRIPT2_CPU_STATS_NUM_CORES_STR = 'CPU: Num of cores'
 
+
 SCRIPT2_IO_BYTES_STR = 'IO, read/write, bytes'
 SCRIPT2_IO_MS_STR = 'IO, read/write, milliseconds'
 
@@ -33,11 +34,13 @@ SCRIPT2_IO_BYTES_WRITTEN_IDX = 1
 SCRIPT2_IO_MS_READ_IDX = 0
 SCRIPT2_IO_MS_WRITTEN_IDX = 1
 
+
 SCRIPT2_MEM_BYTES_STR = 'MEM: total/used/available, bytes'
 
 SCRIPT2_MEM_BYTES_TOTAL_IDX = 0
 SCRIPT2_MEM_BYTES_USED_IDX = 1
 SCRIPT2_MEM_BYTES_AVAILABLE_IDX = 2
+
 
 SCRIPT2_NET_BYTES_STR = 'NET Total, sent/received, bytes'
 
@@ -45,6 +48,12 @@ SCRIPT2_NET_BYTES_SENT_IDX = 0
 SCRIPT2_NET_BYTES_RECEIVED_IDX = 1
 
 
+SCRIPT2_GPU_STATS_STR = 'CPU Stats'
+SCRIPT2_GPU_STATS_IDX = 2
+
+
+SCRIPT2_PROCESSES_STATS_STR = 'Processes Stats'
+SCRIPT2_PROCESSES_STATS_IDX = 3
 # ---------------------------------------
 
 # ---------------------------------------
@@ -60,6 +69,15 @@ def get_sys_stats_dict(rec: dict) -> dict:
     :return: extracted information dictionary
     """
     return rec[SCRIPT2_SYS_STATS_IDX][SCRIPT2_SYS_STATS_STR]
+
+
+def get_processes_stats_dict(rec: dict) -> dict:
+    """
+    extracts processes Stats information from Script2 json dictionary
+    :param rec: one Script2 json record
+    :return: extracted information dictionary
+    """
+    return rec[SCRIPT2_PROCESSES_STATS_IDX][SCRIPT2_PROCESSES_STATS_STR]
 
 
 def get_cpu_stats_dict(rec: dict) -> dict:
@@ -359,12 +377,12 @@ def get_sys_overall_row():
     :return: created dataframe
     """
     logging.info('Create Overall system as "Process" DataFrame row')
-    info_df = pd.DataFrame([rawu.OVERALL_SYSTEM_PROCESS_NAME], columns=[rawu.OVERALL_PROCESS_NAME_COLUMN_NAME])
+    info_df = pd.DataFrame([rawu.OVERALL_SYSTEM_PROCESS_NAME], columns=[rawu.PROCESS_NAME_COLUMN_NAME])
 
     return info_df
 
 
-def get_avg_cpu_load_row(cores_load: pd.DataFrame)->pd.DataFrame:
+def get_avg_cpu_load_row(cores_load: pd.DataFrame) -> pd.DataFrame:
     """
     calculates average CPU load from cores loades
     :param cores_load:
@@ -376,8 +394,19 @@ def get_avg_cpu_load_row(cores_load: pd.DataFrame)->pd.DataFrame:
     return sys_load
 
 
-def get_processes_info_from_timestamp():
+def get_process_info_row(prc_info):
+    # prc_df = pd.DataFrame(columns = )
     pass
+
+
+def get_processes_info_from_timestamp(rec: dict):
+    logging.info('Start handling of detailed process info')
+
+    prcs_dict = get_processes_stats_dict(rec)
+
+    for prc_rec in prcs_dict.values():
+        prc_df = get_process_info_row(prc_rec)
+        pp(prc_df)
 
 
 def parse_script2_record(timestamp, rec):
@@ -397,6 +426,8 @@ def parse_script2_record(timestamp, rec):
     cpu_load_per_core_df = get_cpu_cores_load_info_row(rec)
     avg_cpu_load_df = get_avg_cpu_load_row(cpu_load_per_core_df)
     overall_sys_process_df = get_sys_overall_row()
+
+    prc_info = get_processes_info_from_timestamp(rec)
 
     sys_rec = pd.concat([dt_df, machine_info_df, disk_io_info_df, virtual_mem_info_df,
                          total_net_info_df, overall_sys_process_df, cpu_load_per_core_df, avg_cpu_load_df],
@@ -430,7 +461,7 @@ def get_standardized_process_out_filename(df: pd.DataFrame):
     end_date_str = str(df.iloc[-1][rawu.RAW_START_DATE_COLUMN_NAME])
     end_time_str = rawu.convert_df_time_to_str(df.iloc[-1][rawu.RAW_START_TIME_COLUMN_NAME])
 
-    process_name = str(df.iloc[0][rawu.OVERALL_PROCESS_NAME_COLUMN_NAME])
+    process_name = str(df.iloc[0][rawu.PROCESS_NAME_COLUMN_NAME])
     process_name = get_process_name_as_filename_suffix(process_name)
 
     suffix_name = process_name + rawu.RAW_FILENAME_DELIM + rawu.RAW_SCRIPT2_REALMEAS_FILENAME_SUFFIX
@@ -484,7 +515,7 @@ def standardize_raw_Script2_file(full_filename: str, out_dir: str):
     sys_df = pd.concat(sys_list, ignore_index=True)
 
     logging.info('Store overall system info')
-    store_standardized_Script2_to_outfile(sys_df, out_dir)
+    # store_standardized_Script2_to_outfile(sys_df, out_dir)
 
 
 def standardize_raw_Script2_in_dir(parsing_dir: str, out_dir: str):
@@ -500,8 +531,8 @@ def standardize_raw_Script2_in_dir(parsing_dir: str, out_dir: str):
     file_list = (list(parse_path.glob('*' + rawu.RAW_FILENAME_DELIM + rawu.RAW_SCRIPT2_FILENAME_SUFFIX + '.*')))
 
     for file in file_list:
-        standardize_raw_Script2_file(str(file), out_dir)
+        # standardize_raw_Script2_file(str(file), out_dir)
         # pp(str(file))
-        # continue
+        continue
 
-    # standardize_raw_Script2_file(str(file_list[0]), out_dir)
+    standardize_raw_Script2_file(str(file_list[0]), out_dir)
